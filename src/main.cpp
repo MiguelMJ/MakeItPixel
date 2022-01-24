@@ -2,13 +2,14 @@
 
 #include <SFML/Graphics.hpp>
 #include "Quantization.hpp"
+#include "parser.hpp"
 
 using namespace std;
 using namespace mipa;
 
 int main(){
 
-    sf::Image image0, image1, image2, image3, image4;
+    /* sf::Image image0, image1, image2, image3, image4;
     if(!image0.loadFromFile("foto.jpg")){
         throw "mec";
     }
@@ -38,7 +39,7 @@ int main(){
     mipa::ditherOrdered(image3, quant, mipa::Vertical4, 4);
     image3.saveToFile("output3.png"); 
     mipa::ditherOrdered(image4, quant, mipa::Heart, 5);
-    image4.saveToFile("output4.png"); 
+    image4.saveToFile("output4.png");  */
     
     /* mipa::RGB c = mipa::BLACK;
     for(float i = 0.f; i <= 1.f; i+= 1.f/5){
@@ -47,6 +48,29 @@ int main(){
         cc.lerp(mipa::WHITE, i);
         cout << c << " " << cc << endl;
     } */
+
+    std::cout << "▙▗▌   ▌      ▜▘▐   ▛▀▖▗       ▜  ▞▀▖   ▐   ▐" << std::endl;
+    std::cout << "▌▘▌▝▀▖▌▗▘▞▀▖ ▐ ▜▀  ▙▄▘▄ ▚▗▘▞▀▖▐  ▙▄▌▙▀▖▜▀  ▐" << std::endl;
+    std::cout << "▌ ▌▞▀▌▛▚ ▛▀  ▐ ▐ ▖ ▌  ▐ ▗▚ ▛▀ ▐  ▌ ▌▌  ▐ ▖ ▐" << std::endl;
+    std::cout << "▘ ▘▝▀▘▘ ▘▝▀▘ ▀▘ ▀  ▘  ▀▘▘ ▘▝▀▘ ▘ ▘ ▘▘   ▀  ▗" << std::endl;
+    std::cout << "------------------------------------------" << std::endl;
     
+    while(!mipa::ProgramState::finished){    
+        try{
+            prompt(true);
+            yyparse();
+        }catch(const std::runtime_error& err){
+            std::cerr << "Error: " << err.what() << std::endl;
+        }catch(int signal){ // signals are not errors
+            switch(signal){
+                case 0:
+                    // exit signal
+                    break;
+                default:
+                    std::cerr << "Internal error: Unknown signal: " << signal << std::endl;
+            }
+        }
+    }
+
     return 0;
 }

@@ -70,7 +70,7 @@ $(shell mkdir -p build/debug/src build/release/src )
 #
 
 src/parser.cpp: src/parser.bison
-	bison --defines=include/parser.hpp src/parser.bison -o src/parser.cpp
+	bison -Wcounterexamples --defines=include/parser.hpp src/parser.bison -o src/parser.cpp
 
 src/lexer.cpp: src/lexer.flex
 	flex --nounistd -o src/lexer.cpp src/lexer.flex

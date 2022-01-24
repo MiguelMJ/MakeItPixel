@@ -2,6 +2,7 @@
 
     #include <cstdlib>
     #include <sstream>
+    #include "ProgramState.hpp"
     #include "Value.hpp"
     #include "parser.hpp"
     std::stringstream token;
@@ -23,7 +24,7 @@
     \\\\    {token<<'\\';}
     \\\'    {token<<'\'';}
     \"      {
-                yylval.value = new StringValue(token.str());
+                yylval.innervalue = new StringValue(token.str());
                 token.str("");
                 BEGIN(INITIAL);
                 return VALUE;
@@ -32,7 +33,18 @@
 }
 
 \"  { BEGIN(STRINGSTATE); }
-[0-9]+(\.[0-9]+)? { yylval.value = new NumberValue(std::atof(yytext)); return VALUE; }
-[()\n;=,]   { return yytext[0]; }
+
+-?[0-9]+(\.[0-9]+)? { 
+    yylval.innervalue = new NumberValue(std::atof(yytext));
+    return VALUE;
+    }
+
+[a-zA-Z][_a-zA-Z0-9]* {strcpy(yylval.string,yytext); return VARIABLE; }
+
+[()\n;=,.]   { return yytext[0]; }
+
+[ \t]+ {}
+
+.   { return YYUNDEF; }
 
 %%

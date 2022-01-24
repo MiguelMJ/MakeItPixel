@@ -47,13 +47,19 @@ extern int yydebug;
 /* "%code requires" blocks.  */
 #line 1 "src/parser.bison"
 
+  #include <iostream>
   #include <stack>
   #include <stdexcept>
+  #include <cstring>
   #include "Value.hpp"
+  #include "ProgramState.hpp"
   extern int yylex();
+  extern FILE* yyin;
   void yyerror(const char* msg);
+  void prompt(bool force=false);
+  #include "BuiltInFunctions.hpp"
 
-#line 57 "include/parser.hpp"
+#line 63 "include/parser.hpp"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -66,8 +72,7 @@ extern int yydebug;
     YYUNDEF = 257,                 /* "invalid token"  */
     IN = 258,                      /* IN  */
     VALUE = 259,                   /* VALUE  */
-    VARIABLE = 260,                /* VARIABLE  */
-    COMMAND = 261                  /* COMMAND  */
+    VARIABLE = 260                 /* VARIABLE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -76,13 +81,13 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 10 "src/parser.bison"
+#line 14 "src/parser.bison"
 
-    char* string;
-    mipa::Value *value;
+    char string[32];
+    mipa::Value *innervalue;
     std::stack<mipa::Value*> *stack;
 
-#line 86 "include/parser.hpp"
+#line 91 "include/parser.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;
