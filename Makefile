@@ -12,7 +12,7 @@ LINKDIRS =
 LDFLAGS = 
 LIBS =
 LINKAGE = $(LIBS) $(LDFLAGS)
-SRC_FILES = $(wildcard src/*.cpp)
+SRC_FILES = $(wildcard src/*.cpp) src/lexer.cpp src/parser.cpp
 		
 OBJ = $(SRC_FILES:%.cpp=%.o)
 DEP = $(OBJ:%.o=%.d)
@@ -66,11 +66,21 @@ $(shell mkdir -p build/debug/src build/release/src )
 -include $(RELDEP)
 
 #
+# Interpreter source rules
+#
+
+src/parser.cpp: src/parser.bison
+	bison --defines=include/parser.hpp src/parser.bison -o src/parser.cpp
+
+src/lexer.cpp: src/lexer.flex
+	flex --nounistd -o src/lexer.cpp src/lexer.flex
+
+#
 # Debug rules
 #
 debug: $(DBGEXEC)
 
-$(DBGEXEC): $(DBGOBJ)
+$(DBGEXEC): $(DBGOBJ) intpreter
 	$(call print_info,Building $@)
 	@$(CXX) $(CXXFLAGS) $(DBGCFLAGS) $^ -o $(DBGEXEC) $(LINKAGE)
 	$(call print_success,$< ready)

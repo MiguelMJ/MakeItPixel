@@ -3,25 +3,42 @@
 PROGRAM :- STATEMENT | STATEMENT ';' PROGRAM ;
 
 STATEMENT :- ASSIGNATION
-           | display VARIABLE{palette} in filename 
-           | save VARIABLE{image|palette} in filename
+           | display VALUE{palette} in filename 
+           | save VALUE{image|palette} in filename
            | push VARIABLE{image}
            | pull VARIABLE{image}
-           | quant VARIABLE{image} VALUE{palette} in filename
+           | pixeled VARIABLE{image} NUM PIXELSELECTOR QUANTIZER
            ;
 
-ASSIGNATION :- VARIABLE = VALUE ;
+VALUE :- VARIABLE | COLOR | PALETTE | IMAGE | QUANTIZER | COLORER | PIXELSELECTOR;
 
-VALUE :- VARIABLE | COLOR | PALETTE | IMAGE;
+PIXELSELECTOR :- median | average | minimum | maximum ;
+
+QUANTIZER :- direct
+           | ordered(MATRIX, NUM) // sparsity
+           | ordered(MATRIX, NUM, NUM) // sparsity and threshold
+           | error_propagation()
+           | error_propagation(NUM) // threshold
+           ;
+
+MATRIX :- bayes2
+        | bayes4
+        | bayes8
+        | horizontal
+        | vertical
+        ;
+
+ASSIGNATION :- VARIABLE = VALUE ;
+ 
 
 COLOR :- rgb(NUM, NUM, NUM) 
        | rgba(NUM, NUM, NUM, NUM)
        | hsv(NUM, NUM, NUM) 
        | hsva(NUM, NUM, NUM, NUM)
        | #HEX
-       | ( COLOR, NUM )> // shift hue left
-       | <( COLOR, NUM ) // shift hue right
-       | COLOR <NUM>(COLOR) // lerped
+       | COLOR >> NUM // shift hue left
+       | COLOR << NUM // shift hue right
+       | COLOR <> COLOR NUM % // lerped
        | COLOR ^^ NUM // lightened
        | COLOR .. NUM // darkened
        | COLOR ! // full saturation
