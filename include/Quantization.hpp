@@ -9,6 +9,15 @@
 
 namespace mipa{
     template <typename F>
+    void directQuantize(sf::Image& image, F quant){
+        sf::Vector2u imgSize = image.getSize();        
+        for(uint y = 0; y < imgSize.y; y++){
+            for(uint x = 0; x < imgSize.x; x++){
+                image.setPixel(x, y, quant(image.getPixel(x, y)));
+            }
+        }
+    }
+    template <typename F>
     void ditherFloydSteinberg(sf::Image& image, F quant, float threshold = 0){
         sf::Vector2u imgSize = image.getSize();        
         for(uint y = 0; y < imgSize.y; y++){
@@ -39,16 +48,21 @@ namespace mipa{
     }
 
     typedef struct{
-        int w, h;
+        int h, w;
         std::vector<float> elements;
         int getHeight() const;
         int getWidth() const;
         float get(int r, int c) const;
     } Matrix;
 
-    extern const Matrix Bayes2x2;
-    extern const Matrix Bayes4x4;
-    extern const Matrix Bayes8x8;
+    extern const Matrix Bayes2;
+    extern const Matrix Bayes4;
+    extern const Matrix Bayes8;
+    extern const Matrix Horizontal2;
+    extern const Matrix Horizontal4;
+    extern const Matrix Vertical2;
+    extern const Matrix Vertical4;
+    extern const Matrix Heart;
 
     template <typename F>
     void ditherOrdered(sf::Image& image, F quant, const Matrix& m, float sparsity, float threshold=0){
