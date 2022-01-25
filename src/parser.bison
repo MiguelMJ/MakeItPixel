@@ -79,6 +79,7 @@ value : VARIABLE {
             mipa::ProgramState::setConstant($1);
           }
       | function_call { $$ = $1; mipa::ProgramState::setConstant($1); }
+      | '[' argstack ']' { $$ = mipa::BuiltInFunctions.at("palette")(*$2); delete $2; }
       ;
 
 %%

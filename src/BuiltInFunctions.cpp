@@ -136,7 +136,49 @@ namespace mipa{
         return new ColorValue(toRGB(hsv));        
     }
 
+    Value* palette(argstack& args){
+        Palette palette;
+        while(!args.empty()){
+            Value* val = args.top();
+            args.pop();
+            assert_type(*val, COLOR);
+            palette.push_back(((ColorValue*)val)->color);
+        }
+        return new PaletteValue(palette);        
+    }
+
+    Value* push(argstack& args){
+        while(!args.empty()){
+            Value* arg = args.top();
+            args.pop();
+            assert_type(*arg, STRING);
+            std::string varname = ((StringValue*)arg)->string;
+            Value* val = ProgramState::get(varname);
+            ProgramState::symbolStack[varname].push(val->copy());
+        }
+        return nullptr;        
+    }
+
+    Value* pop(argstack& args){
+        while(!args.empty()){
+            Value* arg = args.top();
+            args.pop();
+            assert_type(*arg, STRING);
+            std::string varname = ((StringValue*)arg)->string;
+            auto it = ProgramState::symbolStack.find(varname);
+            if(it == ProgramState::symbolStack.end() || it->second.empty()){
+                throw std::runtime_error(varname+" has no stacked value");
+            }
+            ProgramState::set(varname, it->second.top());
+            it->second.pop();
+        }
+        return nullptr;
+    }
+
     const std::map<std::string, BuiltInFunction> BuiltInFunctions = {
+        {"push", push},
+        {"pop", pop},
+        {"palette", palette},
         {"hsv", hsv},
         {"rgb", rgb},
         {"show", show},
