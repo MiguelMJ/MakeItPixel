@@ -6,14 +6,6 @@
 
 namespace mipa{
     typedef std::stack<Value*> argstack;
-/* 
-        COLOR = 1, 
-        PALETTE = 2,
-        IMAGE = 4, 
-        QUANTIZER = 8, 
-        COLORER = 16, 
-        NUMBER = 32, 
-        STRING = 64 */
     
     std::map<ValueType, std::string> typenames{
         {COLOR, "Color"},
@@ -102,7 +94,51 @@ namespace mipa{
         return args.top();
     }
 
+    Value* rgb(argstack& args){
+        if(args.size() != 3 && args.size() != 4){
+            throw std::runtime_error("Incorrect number of arguments: expected 3 or 4, got: "+std::to_string(args.size()));
+        }
+        RGB rgb;
+        assert_type(*args.top(), NUMBER);
+        rgb.r = ((NumberValue*)args.top())->number;
+        args.pop();
+        assert_type(*args.top(), NUMBER);
+        rgb.g = ((NumberValue*)args.top())->number;
+        args.pop();
+        assert_type(*args.top(), NUMBER);
+        rgb.b = ((NumberValue*)args.top())->number;
+        args.pop();
+        if(!args.empty()){
+            assert_type(*args.top(), NUMBER);
+            rgb.a = ((NumberValue*)args.top())->number;
+        }
+        return new ColorValue(rgb);        
+    }
+
+    Value* hsv(argstack& args){
+        if(args.size() != 3 && args.size() != 4){
+            throw std::runtime_error("Incorrect number of arguments: expected 3 or 4, got: "+std::to_string(args.size()));
+        }
+        HSV hsv;
+        assert_type(*args.top(), NUMBER);
+        hsv.h = ((NumberValue*)args.top())->number;
+        args.pop();
+        assert_type(*args.top(), NUMBER);
+        hsv.s = ((NumberValue*)args.top())->number;
+        args.pop();
+        assert_type(*args.top(), NUMBER);
+        hsv.v = ((NumberValue*)args.top())->number;
+        args.pop();
+        if(!args.empty()){
+            assert_type(*args.top(), NUMBER);
+            hsv.a = ((NumberValue*)args.top())->number;
+        }
+        return new ColorValue(toRGB(hsv));        
+    }
+
     const std::map<std::string, BuiltInFunction> BuiltInFunctions = {
+        {"hsv", hsv},
+        {"rgb", rgb},
         {"show", show},
         {"save", save},
         {"load", load},

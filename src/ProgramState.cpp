@@ -52,6 +52,11 @@ namespace mipa{
             if(it == symbolTable.end()) throw std::runtime_error("Undefined variable "+var);
             return it->second;
         }
+        void maybeRefresh(ImageValue* val){
+            if(&val->image == for_display){
+                should_refresh = true;
+            }
+        }
         void unset(const std::string var){
             auto it = symbolTable.find(var);
             if(it != symbolTable.end()){

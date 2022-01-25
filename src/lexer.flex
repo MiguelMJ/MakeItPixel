@@ -39,6 +39,14 @@
     return VALUE;
     }
 
+#[0-9a-zA-Z]+ { 
+      std::stringstream ss(&yytext[1]);
+      RGB rgb;
+      ss >> rgb;
+      yylval.innervalue = new ColorValue(rgb); 
+      return VALUE; 
+    }
+
 [a-zA-Z][_a-zA-Z0-9]* {strcpy(yylval.string,yytext); return VARIABLE; }
 
 [()\n;=,.]   { return yytext[0]; }
