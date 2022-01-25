@@ -17,6 +17,7 @@ namespace mipa{
         extern std::stack<Value*> constants;
         extern std::unordered_map<Value*, int> pointerCounter;
         extern sf::Image* for_display;
+        extern bool should_refresh;
 
         extern bool finished;
         void setConstant(Value* val);

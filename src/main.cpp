@@ -129,14 +129,14 @@ int main(){
             
             free(in);
 
-            if(mipa::ProgramState::for_display != nullptr){
+            if(mipa::ProgramState::should_refresh){
                 win.available(true);
                 if(!win.check_open()){
                     win.open(*mipa::ProgramState::for_display);
                 }else{
                     win.refresh(*mipa::ProgramState::for_display);
                 }
-                mipa::ProgramState::for_display = nullptr;
+                mipa::ProgramState::should_refresh = false;
             }
         }catch(const std::runtime_error& err){
             std::cerr << "Error: " << err.what() << std::endl;

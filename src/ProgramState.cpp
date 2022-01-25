@@ -8,6 +8,7 @@ namespace mipa{
         std::unordered_map<Value*, int> pointerCounter;
 
         bool finished = false;
+        bool should_refresh = false;
         sf::Image* for_display = nullptr;   
 
         void countPointer(Value* val){
@@ -31,6 +32,17 @@ namespace mipa{
             constants.push(val);
         }
         void set(const std::string var, Value* val){
+            auto it = symbolTable.find(var);
+            if(it != symbolTable.end() && it->second->type == IMAGE){
+                auto imgVal = (ImageValue*)it->second;
+                if(&imgVal->image == for_display){
+                    if(val->type != IMAGE){
+                        throw std::runtime_error(var+" is currently displayed and must store an image");
+                    }
+                    for_display = &((ImageValue*)val)->image;
+                    should_refresh = true;
+                }
+            }
             countPointer(val);
             unset(var);
             symbolTable[var]=val;

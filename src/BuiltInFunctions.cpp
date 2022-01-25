@@ -34,7 +34,7 @@ namespace mipa{
     
     void assert_type(const Value& val, ValueType type){
         if(val.type != type){
-            throw std::runtime_error("Incorrect type: expected "+typenames[type]+", got: "+typenames[type]);
+            throw std::runtime_error("Incorrect type: expected "+typenames[type]+", got: "+typenames[val.type]);
         }
     }
     
@@ -98,6 +98,7 @@ namespace mipa{
         assert_arity(args, 1);
         assert_type(*args.top(), IMAGE);
         ProgramState::for_display = &((ImageValue*)args.top())->image;
+        ProgramState::should_refresh = true;
         return args.top();
     }
 
