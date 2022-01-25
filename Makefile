@@ -10,7 +10,7 @@ CFLAGS = $(CXXFLAGS)
 INCLUDES = -Iinclude
 LINKDIRS =
 LDFLAGS = 
-LIBS = -lreadline
+LIBS = -lreadline -lpthread
 LINKAGE = $(LIBS) $(LDFLAGS)
 SRC_FILES = $(wildcard src/*.cpp) src/lexer.cpp src/parser.cpp
 		
@@ -39,7 +39,7 @@ RELCFLAGS = -O3 -DNDEBUG
 # Libraries
 #
 # SFML
-LIBS += -lsfml-graphics -lsfml-system
+LIBS += -lsfml-graphics -lsfml-window -lsfml-system
 
 #
 # Custom output functions
