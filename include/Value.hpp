@@ -2,9 +2,23 @@
 #define __MIPA_VALUE__
 
 #include <string>
+#include <sstream>
+
+#include <SFML/Graphics.hpp>
+
+#include "Color.hpp"
+#include "Palette.hpp"
 
 namespace mipa{
-    typedef enum {COLOR, PALETTE, IMAGE, QUANTIZER, COLORER, NUMBER, STRING} ValueType;
+    typedef enum {
+        COLOR = 1, 
+        PALETTE = 2,
+        IMAGE = 4, 
+        QUANTIZER = 8, 
+        COLORER = 16, 
+        NUMBER = 32, 
+        STRING = 64
+    } ValueType;
     struct Value{
         ValueType type;
         inline Value(ValueType t): type(t){}
@@ -14,15 +28,48 @@ namespace mipa{
     struct NumberValue: public Value{
         float number;
         inline NumberValue(float n): Value(NUMBER), number(n){}
-        std::string toString() const{
+        inline std::string toString() const override{
             return std::to_string(number);
         }
     };
     struct StringValue: public Value{
         std::string string;
         inline StringValue(std::string s):Value(STRING), string(s){}
-        std::string toString() const{
+        inline std::string toString() const override{
             return string;
+        }
+    };
+    struct ColorValue: public Value{
+        RGB color;
+        inline ColorValue(const RGB& rgb):Value(COLOR),color(rgb){}
+        inline std::string toString() const override{
+            std::stringstream ss;
+            ss << color;
+            return ss.str();
+        }        
+    };
+    struct PaletteValue: public Value{
+        Palette palette;
+        inline PaletteValue(const Palette& p):Value(PALETTE),palette(p){}
+        inline std::string toString() const override{
+            std::stringstream ss("[");
+            for(uint i=0; i < palette.size(); i++){
+                ss << palette[i];
+                if(i < palette.size()-1){
+                    ss << ", ";
+                }
+            }
+            ss << "]";
+            return ss.str();
+        }
+    };
+    struct ImageValue: public Value{
+        sf::Image image;
+        inline ImageValue():Value(IMAGE){}
+        inline ImageValue(const sf::Image& i):Value(IMAGE),image(i){}
+        inline std::string toString() const override{
+            sf::Vector2u imgSize = image.getSize();
+            return "{Image: "+std::to_string(imgSize.x)+"x"+std::to_string(imgSize.y)+"}";
         }
     };
 }

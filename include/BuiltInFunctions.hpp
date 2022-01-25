@@ -6,7 +6,7 @@
 #include <stack>
 
 namespace mipa{
-    typedef Value* (*BuiltInFunction)(std::stack<Value*>);
+    typedef Value* (*BuiltInFunction)(std::stack<Value*>&);
     extern const std::map<std::string, BuiltInFunction> BuiltInFunctions;
 }
 

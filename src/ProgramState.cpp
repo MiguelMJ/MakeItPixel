@@ -22,7 +22,6 @@ namespace mipa{
             pointerCounter[val]--;
             if(pointerCounter[val] == 0){
                 pointerCounter.erase(val);
-                std::cout << "GB: " << val->toString() << std::endl;
                 delete val;
             }
         }

@@ -108,8 +108,8 @@ enum yysymbol_kind_t
   YYSYMBOL_12_ = 12,                       /* ','  */
   YYSYMBOL_YYACCEPT = 13,                  /* $accept  */
   YYSYMBOL_program = 14,                   /* program  */
-  YYSYMBOL_15_1 = 15,                      /* $@1  */
-  YYSYMBOL_sep = 16,                       /* sep  */
+  YYSYMBOL_sep = 15,                       /* sep  */
+  YYSYMBOL__statement = 16,                /* _statement  */
   YYSYMBOL_statement = 17,                 /* statement  */
   YYSYMBOL_function_call = 18,             /* function_call  */
   YYSYMBOL_argstack = 19,                  /* argstack  */
@@ -439,18 +439,18 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  10
+#define YYFINAL  13
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   15
+#define YYLAST   22
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  13
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  8
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  17
+#define YYNRULES  18
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  24
+#define YYNSTATES  26
 
 /* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   260
@@ -500,8 +500,8 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    29,    29,    30,    30,    31,    34,    34,    36,    40,
-      41,    44,    50,    58,    59,    60,    63,    66
+       0,    29,    29,    30,    31,    34,    34,    36,    42,    46,
+      47,    50,    56,    65,    66,    67,    70,    73,    77
 };
 #endif
 
@@ -519,7 +519,7 @@ static const char *const yytname[] =
 {
   "\"end of file\"", "error", "\"invalid token\"", "IN", "VALUE",
   "VARIABLE", "';'", "'\\n'", "'='", "'('", "')'", "'.'", "','", "$accept",
-  "program", "$@1", "sep", "statement", "function_call", "argstack",
+  "program", "sep", "_statement", "statement", "function_call", "argstack",
   "value", YY_NULLPTR
 };
 
@@ -530,7 +530,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-10)
+#define YYPACT_NINF (-12)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -544,9 +544,9 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-       0,   -10,    -7,     3,     9,    -3,   -10,     2,     2,   -10,
-     -10,   -10,   -10,   -10,   -10,   -10,   -10,     4,    -2,     0,
-     -10,     2,   -10,   -10
+       3,   -12,   -12,     9,    -3,     4,    13,   -12,   -12,   -12,
+       1,     1,     1,   -12,   -12,   -12,     3,     2,   -12,    -1,
+      10,   -12,   -12,   -12,     1,   -12
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -554,21 +554,21 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-      10,     5,     0,     0,     0,     2,     9,     0,    15,    12,
-       1,     6,     7,     3,    17,    16,     8,     0,    14,    10,
-      11,    15,     4,    13
+      10,     4,    17,    16,     0,     0,     2,     7,    18,     9,
+       0,    15,    15,     1,     5,     6,    10,    16,     8,     0,
+      14,    12,     3,    11,    15,    13
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -10,    -6,   -10,   -10,   -10,   -10,    -9,     8
+     -12,     5,   -12,   -12,   -12,   -12,   -11,     0
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     4,    19,    13,     5,     6,    17,    18
+       0,     5,    16,     6,     7,     8,    19,    20
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -576,37 +576,39 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-       1,     7,     8,    11,    12,     2,    14,    15,     9,    10,
-      21,     3,    23,    22,    20,    16
+       9,    21,    12,     1,    13,     2,    17,     2,     3,    23,
+      18,    11,     4,    25,     4,     0,     9,    10,    11,    14,
+      15,    22,    24
 };
 
 static const yytype_int8 yycheck[] =
 {
-       0,     8,     9,     6,     7,     5,     4,     5,     5,     0,
-      12,    11,    21,    19,    10,     7
+       0,    12,     5,     0,     0,     4,     5,     4,     5,    10,
+      10,     9,    11,    24,    11,    -1,    16,     8,     9,     6,
+       7,    16,    12
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     0,     5,    11,    14,    17,    18,     8,     9,     5,
-       0,     6,     7,    16,     4,     5,    20,    19,    20,    15,
-      10,    12,    14,    19
+       0,     0,     4,     5,    11,    14,    16,    17,    18,    20,
+       8,     9,     5,     0,     6,     7,    15,     5,    20,    19,
+      20,    19,    14,    10,    12,    19
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    13,    14,    15,    14,    14,    16,    16,    17,    17,
-      17,    18,    18,    19,    19,    19,    20,    20
+       0,    13,    14,    14,    14,    15,    15,    16,    17,    17,
+      17,    18,    18,    19,    19,    19,    20,    20,    20
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     1,     0,     4,     1,     1,     1,     3,     1,
-       0,     4,     2,     3,     1,     0,     1,     1
+       0,     2,     1,     3,     1,     1,     1,     1,     3,     1,
+       0,     4,     3,     3,     1,     0,     1,     1,     1
 };
 
 
@@ -1069,115 +1071,120 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-  case 2: /* program: statement  */
-#line 29 "src/parser.bison"
-                    { mipa::ProgramState::gb_constants(); }
-#line 1076 "src/parser.cpp"
-    break;
-
-  case 3: /* $@1: %empty  */
+  case 3: /* program: _statement sep program  */
 #line 30 "src/parser.bison"
-                        { mipa::ProgramState::gb_constants(); }
-#line 1082 "src/parser.cpp"
+                                 {}
+#line 1078 "src/parser.cpp"
     break;
 
-  case 4: /* program: statement sep $@1 program  */
-#line 30 "src/parser.bison"
-                                                                        {}
-#line 1088 "src/parser.cpp"
-    break;
-
-  case 5: /* program: $end  */
+  case 4: /* program: $end  */
 #line 31 "src/parser.bison"
                 { mipa::ProgramState::finished = true; }
-#line 1094 "src/parser.cpp"
+#line 1084 "src/parser.cpp"
     break;
 
-  case 7: /* sep: '\n'  */
+  case 6: /* sep: '\n'  */
 #line 34 "src/parser.bison"
                  {prompt();}
+#line 1090 "src/parser.cpp"
+    break;
+
+  case 7: /* _statement: statement  */
+#line 36 "src/parser.bison"
+                       { 
+              if((yyvsp[0].innervalue) != nullptr && yyin == stdin) std::cout << (yyvsp[0].innervalue)->toString() << std::endl;
+              mipa::ProgramState::gb_constants();
+              (yyval.innervalue) = (yyvsp[0].innervalue);
+            }
 #line 1100 "src/parser.cpp"
     break;
 
   case 8: /* statement: VARIABLE '=' value  */
-#line 36 "src/parser.bison"
+#line 42 "src/parser.bison"
                                {
                 mipa::ProgramState::set((yyvsp[-2].string), (yyvsp[0].innervalue));
-                (yyval.innervalue) = nullptr;
+                (yyval.innervalue) = (yyvsp[0].innervalue);
               }
 #line 1109 "src/parser.cpp"
     break;
 
-  case 9: /* statement: function_call  */
-#line 40 "src/parser.bison"
-                          {(yyval.innervalue) = (yyvsp[0].innervalue);}
+  case 9: /* statement: value  */
+#line 46 "src/parser.bison"
+                  {(yyval.innervalue) = (yyvsp[0].innervalue);}
 #line 1115 "src/parser.cpp"
     break;
 
   case 10: /* statement: %empty  */
-#line 41 "src/parser.bison"
-            {(yyval.innervalue)=nullptr;}
+#line 47 "src/parser.bison"
+            {(yyval.innervalue) = nullptr;}
 #line 1121 "src/parser.cpp"
     break;
 
   case 11: /* function_call: VARIABLE '(' argstack ')'  */
-#line 44 "src/parser.bison"
+#line 50 "src/parser.bison"
                                           {
-        auto it = mipa::BuiltInFunctions.find((yyvsp[-3].string));
-        if(it == mipa::BuiltInFunctions.end()) throw std::runtime_error("Undefined function: "+std::string((yyvsp[-3].string)));
-        it->second(*(yyvsp[-1].stack));
-        delete (yyvsp[-1].stack);
-      }
+                    auto it = mipa::BuiltInFunctions.find((yyvsp[-3].string));
+                    if(it == mipa::BuiltInFunctions.end()) throw std::runtime_error("Undefined function: "+std::string((yyvsp[-3].string)));
+                    (yyval.innervalue) = it->second(*(yyvsp[-1].stack));
+                    delete (yyvsp[-1].stack);
+                  }
 #line 1132 "src/parser.cpp"
     break;
 
-  case 12: /* function_call: '.' VARIABLE  */
-#line 50 "src/parser.bison"
-                             { 
-                            auto it = mipa::BuiltInFunctions.find((yyvsp[0].string));
-                            if(it == mipa::BuiltInFunctions.end()) throw std::runtime_error("Undefined function: "+std::string((yyvsp[0].string)));
-                            it->second({});
+  case 12: /* function_call: '.' VARIABLE argstack  */
+#line 56 "src/parser.bison"
+                                      { 
+                            auto it = mipa::BuiltInFunctions.find((yyvsp[-1].string));
+                            if(it == mipa::BuiltInFunctions.end()) throw std::runtime_error("Undefined function: "+std::string((yyvsp[-1].string)));
+                            (yyval.innervalue) = it->second(*(yyvsp[0].stack));
+                            delete (yyvsp[0].stack);
                           }
-#line 1142 "src/parser.cpp"
+#line 1143 "src/parser.cpp"
     break;
 
   case 13: /* argstack: value ',' argstack  */
-#line 58 "src/parser.bison"
+#line 65 "src/parser.bison"
                               {(yyval.stack) = (yyvsp[0].stack); (yyvsp[0].stack)->push((yyvsp[-2].innervalue)); }
-#line 1148 "src/parser.cpp"
+#line 1149 "src/parser.cpp"
     break;
 
   case 14: /* argstack: value  */
-#line 59 "src/parser.bison"
+#line 66 "src/parser.bison"
                 {(yyval.stack) = new std::stack<mipa::Value*>; (yyval.stack)->push((yyvsp[0].innervalue)); }
-#line 1154 "src/parser.cpp"
+#line 1155 "src/parser.cpp"
     break;
 
   case 15: /* argstack: %empty  */
-#line 60 "src/parser.bison"
+#line 67 "src/parser.bison"
           { (yyval.stack) = new std::stack<mipa::Value*>; }
-#line 1160 "src/parser.cpp"
+#line 1161 "src/parser.cpp"
     break;
 
   case 16: /* value: VARIABLE  */
-#line 63 "src/parser.bison"
+#line 70 "src/parser.bison"
                  { 
           (yyval.innervalue) = mipa::ProgramState::get((yyvsp[0].string));
         }
-#line 1168 "src/parser.cpp"
+#line 1169 "src/parser.cpp"
     break;
 
   case 17: /* value: VALUE  */
-#line 66 "src/parser.bison"
+#line 73 "src/parser.bison"
               { 
             (yyval.innervalue) = (yyvsp[0].innervalue); 
             mipa::ProgramState::setConstant((yyvsp[0].innervalue));
           }
-#line 1177 "src/parser.cpp"
+#line 1178 "src/parser.cpp"
+    break;
+
+  case 18: /* value: function_call  */
+#line 77 "src/parser.bison"
+                      { (yyval.innervalue) = (yyvsp[0].innervalue); mipa::ProgramState::setConstant((yyvsp[0].innervalue)); }
+#line 1184 "src/parser.cpp"
     break;
 
 
-#line 1181 "src/parser.cpp"
+#line 1188 "src/parser.cpp"
 
       default: break;
     }
@@ -1370,7 +1377,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 72 "src/parser.bison"
+#line 80 "src/parser.bison"
 
 void yyerror(const char* msg){
     throw std::runtime_error("parser: "+std::string(msg));
