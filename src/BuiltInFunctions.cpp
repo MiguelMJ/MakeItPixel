@@ -94,7 +94,15 @@ namespace mipa{
         return val;
     }
 
+    Value* show(argstack& args){
+        assert_arity(args, 1);
+        assert_type(*args.top(), IMAGE);
+        ProgramState::for_display = &((ImageValue*)args.top())->image;
+        return args.top();
+    }
+
     const std::map<std::string, BuiltInFunction> BuiltInFunctions = {
+        {"show", show},
         {"save", save},
         {"load", load},
         {"print", print},

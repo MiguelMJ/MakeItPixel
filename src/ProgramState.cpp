@@ -7,7 +7,8 @@ namespace mipa{
         std::stack<Value*> constants;
         std::unordered_map<Value*, int> pointerCounter;
 
-        bool finished = false;   
+        bool finished = false;
+        sf::Image* for_display = nullptr;   
 
         void countPointer(Value* val){
             auto it = pointerCounter.find(val);

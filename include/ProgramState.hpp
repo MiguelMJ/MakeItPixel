@@ -16,6 +16,7 @@ namespace mipa{
         extern std::map<std::string, Value*> symbolTable;
         extern std::stack<Value*> constants;
         extern std::unordered_map<Value*, int> pointerCounter;
+        extern sf::Image* for_display;
 
         extern bool finished;
         void setConstant(Value* val);
