@@ -8,6 +8,7 @@
 
 #include "Color.hpp"
 #include "Palette.hpp"
+#include "Quantization.hpp"
 
 namespace mipa{
     typedef enum {
@@ -15,7 +16,7 @@ namespace mipa{
         PALETTE = 2,
         IMAGE = 4, 
         QUANTIZER = 8, 
-        COLORER = 16, 
+        COLORSTRATEGY = 16, 
         NUMBER = 32, 
         STRING = 64
     } ValueType;
@@ -89,6 +90,67 @@ namespace mipa{
             return new ImageValue(image);
         }
     };
+    struct ColorStrategyValue: public Value{
+        inline ColorStrategyValue(): Value(COLORSTRATEGY){}
+        virtual RGB operator()(const RGB& rgb) const{
+            return rgb;
+        };
+        virtual std::string toString() const{
+            return "{Empty Color Strategy}";
+        };
+        virtual Value* copy() const override{
+            return new ColorStrategyValue;
+        }
+    };
+    struct PaletteColorStrategyValue: public ColorStrategyValue{
+        Palette palette;
+        RGB (*picker)(const Palette& p, const RGB& in);
+        inline RGB operator()(const RGB& rgb) const override{
+            return picker(palette, rgb);
+        }
+        inline std::string toString() const override{
+            std::stringstream ss;
+            ss << "{Palette Picker " << PaletteValue(palette).toString() << "}";
+            return ss.str();
+        };
+        inline Value* copy() const override{
+            auto pcsv = new PaletteColorStrategyValue;
+            pcsv->palette = palette;
+            pcsv->picker = picker;
+            return pcsv;
+        }
+    };
+    struct QuantizerValue: public Value{
+        inline QuantizerValue(): Value(QUANTIZER){}
+        virtual void apply(sf::Image& img, ColorStrategyValue* strategy) const = 0;
+        virtual std::string toString() const = 0;
+        virtual Value* copy() const = 0;
+    };
+    struct DirectQuantizerValue: public QuantizerValue{
+        void apply(sf::Image& img, ColorStrategyValue* strategy) const override{
+            directQuantize(img, strategy);
+        }
+        inline std::string toString() const override{
+            return "{Direct Quantizer}";
+        }
+        inline Value* copy() const override{
+            return new DirectQuantizerValue();
+        }
+    };
+    struct OrderedDitherQuantizerValue: public QuantizerValue{
+        std::string matrixName;
+        float sparsity, threshold;
+        void apply(sf::Image& img, ColorStrategyValue* strategy) const override{
+            ditherOrdered(img, strategy, matrices.at(matrixName), sparsity, threshold);
+        }
+        inline std::string toString() const override{
+            return "{Ordered Dither: "+matrixName+"}";
+        }
+        inline Value* copy() const override{
+            return new DirectQuantizerValue();
+        }
+    };
+
 }
 
 #endif

@@ -86,4 +86,13 @@ namespace mipa{
             03,05,06,00,00,06,05,03,
         }
     };
+    const std::map<std::string, Matrix> matrices = {
+        {"Bayes2", Bayes2},
+        {"Bayes4", Bayes4},
+        {"Bayes8", Bayes8},
+        {"Horizontal2", Horizontal2},
+        {"Horizontal4", Horizontal4},
+        {"Vertical2", Vertical2},
+        {"Vertical4", Vertical4}
+    };
 }

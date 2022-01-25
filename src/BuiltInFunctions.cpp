@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "Quantization.hpp"
 #include "ProgramState.hpp"
 
 namespace mipa{
@@ -12,7 +13,7 @@ namespace mipa{
         {PALETTE, "Palette"},
         {IMAGE, "Image"},
         {QUANTIZER, "Color Quantizer"},
-        {COLORER, "Color Strategy"},
+        {COLORSTRATEGY, "Color Strategy"},
         {NUMBER, "Number"},
         {STRING, "String"},
     };
@@ -175,7 +176,7 @@ namespace mipa{
         return nullptr;
     }
 
-    Value* stack(argstack&){
+    Value* stack(argstack& ){
         for(auto& pair: ProgramState::symbolStack){
             if(pair.second.empty()) continue;
             auto it = ProgramState::symbolTable.find(pair.first);
@@ -193,8 +194,69 @@ namespace mipa{
         }
         return nullptr;
     }
+    Value* closest_rgb(argstack& args){
+        assert_arity(args, 1);
+        assert_type(*args.top(), PALETTE);
+        auto pcsv = new PaletteColorStrategyValue;
+        pcsv->palette = ((PaletteValue*)args.top())->palette;
+        pcsv->picker = [](const Palette& p, const RGB& rgb)->RGB{
+                return closestByColor(p, rgb)[0];
+            };
+        return pcsv;
+    }
+    Value* direct(argstack& args){
+        assert_arity(args, 0);
+        return new DirectQuantizerValue();
+    }
+    Value* dither_ord(argstack& args){
+        if(args.size() > 3){
+            throw std::runtime_error("Incorrect number of arguments: got: "+std::to_string(args.size()));
+        }
+        std::string matrix="Bayes2";
+        float sparsity = 3;
+        float threshold = 0;
+        if(!args.empty()){
+            assert_type(*args.top(), STRING);
+            matrix = ((StringValue*)args.top())->string;
+            args.pop();
+        }
+        if(!args.empty()){
+            assert_type(*args.top(), NUMBER);
+            sparsity = ((NumberValue*)args.top())->number;
+            args.pop();
+        }
+        if(!args.empty()){
+            assert_type(*args.top(), NUMBER);
+            threshold = ((NumberValue*)args.top())->number;
+        }
+        auto it = matrices.find(matrix);
+        if(it == matrices.end()) throw std::runtime_error(matrix+" is not an ordered dither matrix");
+        auto dither = new OrderedDitherQuantizerValue();
+        dither->matrixName = matrix;
+        dither->sparsity = sparsity;
+        dither->threshold = threshold;
+        return dither;
+    }
+    Value* quantize(argstack& args){
+        assert_arity(args, 3);
+        assert_type(*args.top(), IMAGE);
+        ImageValue *img =(ImageValue*)args.top();
+        args.pop();
+        assert_type(*args.top(), COLORSTRATEGY);
+        ColorStrategyValue *strategy =(ColorStrategyValue*)args.top();
+        args.pop();
+        assert_type(*args.top(), QUANTIZER);
+        QuantizerValue *quant =(QuantizerValue*)args.top();
+        quant->apply(img->image, strategy);
+        ProgramState::maybeRefresh(img);
+        return img;
+    }
 
     const std::map<std::string, BuiltInFunction> BuiltInFunctions = {
+        {"closest_rgb", closest_rgb},
+        {"direct", direct},
+        {"dither_ord", dither_ord},
+        {"quantize", quantize},
         {"stack", stack},
         {"push", push},
         {"pop", pop},

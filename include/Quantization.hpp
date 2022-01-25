@@ -13,7 +13,7 @@ namespace mipa{
         sf::Vector2u imgSize = image.getSize();        
         for(uint y = 0; y < imgSize.y; y++){
             for(uint x = 0; x < imgSize.x; x++){
-                image.setPixel(x, y, quant(image.getPixel(x, y)));
+                image.setPixel(x, y, (*quant)(image.getPixel(x, y)));
             }
         }
     }
@@ -23,7 +23,7 @@ namespace mipa{
         for(uint y = 0; y < imgSize.y; y++){
             for(uint x = 0; x < imgSize.x; x++){
                 RGB oldColor = image.getPixel(x,y);
-                RGB newColor = quant(oldColor);
+                RGB newColor = (*quant)(oldColor);
                 image.setPixel(x,y,newColor); 
                 float err = rgbSquaredDistance(oldColor, newColor);
                 if (err > threshold * threshold){
@@ -55,14 +55,7 @@ namespace mipa{
         float get(int r, int c) const;
     } Matrix;
 
-    extern const Matrix Bayes2;
-    extern const Matrix Bayes4;
-    extern const Matrix Bayes8;
-    extern const Matrix Horizontal2;
-    extern const Matrix Horizontal4;
-    extern const Matrix Vertical2;
-    extern const Matrix Vertical4;
-    extern const Matrix Heart;
+    extern const std::map<std::string, Matrix> matrices;
 
     template <typename F>
     void ditherOrdered(sf::Image& image, F quant, const Matrix& m, float sparsity, float threshold=0){
@@ -76,8 +69,8 @@ namespace mipa{
                 int interR = clamp((int)oldColor.r + (255.f/sparsity) * mij);
                 int interG = clamp((int)oldColor.g + (255.f/sparsity) * mij);
                 int interB = clamp((int)oldColor.b + (255.f/sparsity) * mij);
-                RGB newColor = quant(RGB(interR, interG, interB));
-                oldColor = quant(oldColor);
+                RGB newColor = (*quant)(RGB(interR, interG, interB));
+                oldColor = (*quant)(oldColor);
                 float err = rgbDistance(oldColor, newColor);
                 if(err > threshold * threshold){
                     image.setPixel(x,y, newColor);
