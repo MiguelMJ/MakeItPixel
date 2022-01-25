@@ -34,7 +34,7 @@ namespace mipa{
     Value* env(argstack& args){
         assert_arity(args, 0);
         for(auto& pair: ProgramState::symbolTable){
-            std::cout << pair.first << '=' 
+            std::cout << pair.first << " = "  
                 << (pair.second == nullptr ? "null" : pair.second->toString()) 
                 << std::endl;
         }
@@ -175,7 +175,27 @@ namespace mipa{
         return nullptr;
     }
 
+    Value* stack(argstack&){
+        for(auto& pair: ProgramState::symbolStack){
+            if(pair.second.empty()) continue;
+            auto it = ProgramState::symbolTable.find(pair.first);
+            std::cout << pair.first << " = " << (it == ProgramState::symbolTable.end()? "null": it->second->toString()) << std::endl;
+            argstack tmp;
+            while(!pair.second.empty()){
+                std::cout << "    = " << pair.second.top()->toString() << std::endl;
+                tmp.push(pair.second.top());
+                pair.second.pop();
+            }
+            while(!tmp.empty()){
+                pair.second.push(tmp.top());
+                tmp.pop();
+            }
+        }
+        return nullptr;
+    }
+
     const std::map<std::string, BuiltInFunction> BuiltInFunctions = {
+        {"stack", stack},
         {"push", push},
         {"pop", pop},
         {"palette", palette},
