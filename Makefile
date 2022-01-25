@@ -1,7 +1,7 @@
 #
 # General
 #
-EXEC = makeitpixelart
+EXEC = makeitpixel
 CXX = g++
 CXXFLAGS = -std=c++11 -Wall -Wextra -Werror -fmax-errors=3 $(INCLUDES) $(LINKDIRS)
 CC = $(CXX)

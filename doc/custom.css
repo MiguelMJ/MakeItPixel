@@ -1,0 +1,10 @@
+* {
+    font-family: monospace
+}
+div.contents{
+    max-width: 85%;
+    margin-left: 2%;
+}
+.textblock h1{
+    border-bottom: 1px solid #666;
+}

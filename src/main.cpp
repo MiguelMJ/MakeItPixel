@@ -10,10 +10,10 @@ using namespace mipa;
 
 int main(){
 
-    std::cout << "▙▗▌   ▌      ▜▘▐   ▛▀▖▗       ▜  ▞▀▖   ▐   ▐" << std::endl;
-    std::cout << "▌▘▌▝▀▖▌▗▘▞▀▖ ▐ ▜▀  ▙▄▘▄ ▚▗▘▞▀▖▐  ▙▄▌▙▀▖▜▀  ▐" << std::endl;
-    std::cout << "▌ ▌▞▀▌▛▚ ▛▀  ▐ ▐ ▖ ▌  ▐ ▗▚ ▛▀ ▐  ▌ ▌▌  ▐ ▖ ▐" << std::endl;
-    std::cout << "▘ ▘▝▀▘▘ ▘▝▀▘ ▀▘ ▀  ▘  ▀▘▘ ▘▝▀▘ ▘ ▘ ▘▘   ▀  ▗" << std::endl;
+    std::cout << "▙▗▌   ▌      ▜▘▐   ▛▀▖▗       ▜  ▐" << std::endl;
+    std::cout << "▌▘▌▝▀▖▌▗▘▞▀▖ ▐ ▜▀  ▙▄▘▄ ▚▗▘▞▀▖▐  ▐" << std::endl;
+    std::cout << "▌ ▌▞▀▌▛▚ ▛▀  ▐ ▐ ▖ ▌  ▐ ▗▚ ▛▀ ▐  ▐" << std::endl;
+    std::cout << "▘ ▘▝▀▘▘ ▘▝▀▘ ▀▘ ▀  ▘  ▀▘▘ ▘▝▀▘ ▘ ▗" << std::endl;
     std::cout << "------------------------------------------" << std::endl;
     
     while(!mipa::ProgramState::finished){    
