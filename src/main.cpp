@@ -1,6 +1,8 @@
 #include<iostream>
 
 #include "parser.hpp"
+#include "readline/readline.h"
+#include "readline/history.h"
 
 extern int yylex_destroy();
 using namespace std;
@@ -16,11 +18,20 @@ int main(){
     
     while(!mipa::ProgramState::finished){    
         try{
-            prompt(true);
+            // prompt(true);
+            char* in;
+            in = readline("> ");
+            if(in == nullptr) break;
+            if(*in) add_history(in);
+            
+            set_input_string(in);
             yyparse();
+            end_lexical_scan();
+            
+            free(in);
         }catch(const std::runtime_error& err){
             std::cerr << "Error: " << err.what() << std::endl;
-            yylex_destroy();
+            // yylex_destroy();
         }catch(int signal){ // signals are not errors
             switch(signal){
                 case 0:
@@ -31,6 +42,6 @@ int main(){
             }
         }
     }
-
+    std::cout << "Bye" << std::endl;
     return 0;
 }

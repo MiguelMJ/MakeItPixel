@@ -11,6 +11,10 @@
   void prompt(bool force=false);
   #include "BuiltInFunctions.hpp"
 }
+%code provides{
+  extern void set_input_string(const char* in);
+  extern void end_lexical_scan(void);
+}
 %union {
     char string[32];
     mipa::Value *innervalue;
@@ -28,7 +32,7 @@
 
 program : _statement
         | _statement sep program {}
-        | YYEOF { mipa::ProgramState::finished = true; }
+        | YYEOF { /* mipa::ProgramState::finished = true; */ }
         ;
 
 sep : ';' | '\n' {prompt();} ;

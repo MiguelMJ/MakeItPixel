@@ -500,8 +500,8 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    29,    29,    30,    31,    34,    34,    36,    42,    46,
-      47,    50,    56,    65,    66,    67,    70,    73,    77
+       0,    33,    33,    34,    35,    38,    38,    40,    46,    50,
+      51,    54,    60,    69,    70,    71,    74,    77,    81
 };
 #endif
 
@@ -1072,25 +1072,25 @@ yyreduce:
   switch (yyn)
     {
   case 3: /* program: _statement sep program  */
-#line 30 "src/parser.bison"
+#line 34 "src/parser.bison"
                                  {}
 #line 1078 "src/parser.cpp"
     break;
 
   case 4: /* program: $end  */
-#line 31 "src/parser.bison"
-                { mipa::ProgramState::finished = true; }
+#line 35 "src/parser.bison"
+                { /* mipa::ProgramState::finished = true; */ }
 #line 1084 "src/parser.cpp"
     break;
 
   case 6: /* sep: '\n'  */
-#line 34 "src/parser.bison"
+#line 38 "src/parser.bison"
                  {prompt();}
 #line 1090 "src/parser.cpp"
     break;
 
   case 7: /* _statement: statement  */
-#line 36 "src/parser.bison"
+#line 40 "src/parser.bison"
                        { 
               if((yyvsp[0].innervalue) != nullptr && yyin == stdin) std::cout << (yyvsp[0].innervalue)->toString() << std::endl;
               mipa::ProgramState::gb_constants();
@@ -1100,7 +1100,7 @@ yyreduce:
     break;
 
   case 8: /* statement: VARIABLE '=' value  */
-#line 42 "src/parser.bison"
+#line 46 "src/parser.bison"
                                {
                 mipa::ProgramState::set((yyvsp[-2].string), (yyvsp[0].innervalue));
                 (yyval.innervalue) = (yyvsp[0].innervalue);
@@ -1109,19 +1109,19 @@ yyreduce:
     break;
 
   case 9: /* statement: value  */
-#line 46 "src/parser.bison"
+#line 50 "src/parser.bison"
                   {(yyval.innervalue) = (yyvsp[0].innervalue);}
 #line 1115 "src/parser.cpp"
     break;
 
   case 10: /* statement: %empty  */
-#line 47 "src/parser.bison"
+#line 51 "src/parser.bison"
             {(yyval.innervalue) = nullptr;}
 #line 1121 "src/parser.cpp"
     break;
 
   case 11: /* function_call: VARIABLE '(' argstack ')'  */
-#line 50 "src/parser.bison"
+#line 54 "src/parser.bison"
                                           {
                     auto it = mipa::BuiltInFunctions.find((yyvsp[-3].string));
                     if(it == mipa::BuiltInFunctions.end()) throw std::runtime_error("Undefined function: "+std::string((yyvsp[-3].string)));
@@ -1132,7 +1132,7 @@ yyreduce:
     break;
 
   case 12: /* function_call: '.' VARIABLE argstack  */
-#line 56 "src/parser.bison"
+#line 60 "src/parser.bison"
                                       { 
                             auto it = mipa::BuiltInFunctions.find((yyvsp[-1].string));
                             if(it == mipa::BuiltInFunctions.end()) throw std::runtime_error("Undefined function: "+std::string((yyvsp[-1].string)));
@@ -1143,25 +1143,25 @@ yyreduce:
     break;
 
   case 13: /* argstack: value ',' argstack  */
-#line 65 "src/parser.bison"
+#line 69 "src/parser.bison"
                               {(yyval.stack) = (yyvsp[0].stack); (yyvsp[0].stack)->push((yyvsp[-2].innervalue)); }
 #line 1149 "src/parser.cpp"
     break;
 
   case 14: /* argstack: value  */
-#line 66 "src/parser.bison"
+#line 70 "src/parser.bison"
                 {(yyval.stack) = new std::stack<mipa::Value*>; (yyval.stack)->push((yyvsp[0].innervalue)); }
 #line 1155 "src/parser.cpp"
     break;
 
   case 15: /* argstack: %empty  */
-#line 67 "src/parser.bison"
+#line 71 "src/parser.bison"
           { (yyval.stack) = new std::stack<mipa::Value*>; }
 #line 1161 "src/parser.cpp"
     break;
 
   case 16: /* value: VARIABLE  */
-#line 70 "src/parser.bison"
+#line 74 "src/parser.bison"
                  { 
           (yyval.innervalue) = mipa::ProgramState::get((yyvsp[0].string));
         }
@@ -1169,7 +1169,7 @@ yyreduce:
     break;
 
   case 17: /* value: VALUE  */
-#line 73 "src/parser.bison"
+#line 77 "src/parser.bison"
               { 
             (yyval.innervalue) = (yyvsp[0].innervalue); 
             mipa::ProgramState::setConstant((yyvsp[0].innervalue));
@@ -1178,7 +1178,7 @@ yyreduce:
     break;
 
   case 18: /* value: function_call  */
-#line 77 "src/parser.bison"
+#line 81 "src/parser.bison"
                       { (yyval.innervalue) = (yyvsp[0].innervalue); mipa::ProgramState::setConstant((yyvsp[0].innervalue)); }
 #line 1184 "src/parser.cpp"
     break;
@@ -1377,7 +1377,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 80 "src/parser.bison"
+#line 84 "src/parser.bison"
 
 void yyerror(const char* msg){
     throw std::runtime_error("parser: "+std::string(msg));

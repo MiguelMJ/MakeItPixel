@@ -81,7 +81,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 14 "src/parser.bison"
+#line 18 "src/parser.bison"
 
     char string[32];
     mipa::Value *innervalue;
@@ -101,5 +101,12 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
+/* "%code provides" blocks.  */
+#line 14 "src/parser.bison"
+
+  extern void set_input_string(const char* in);
+  extern void end_lexical_scan(void);
+
+#line 111 "include/parser.hpp"
 
 #endif /* !YY_YY_INCLUDE_PARSER_HPP_INCLUDED  */
