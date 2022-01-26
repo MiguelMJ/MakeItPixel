@@ -247,7 +247,9 @@ namespace mipa{
         args.pop();
         assert_type(*args.top(), QUANTIZER);
         QuantizerValue *quant =(QuantizerValue*)args.top();
+        std::cout << "..." << std::endl;
         quant->apply(img->image, strategy);
+        std::cout << "done" << std::endl;
         ProgramState::maybeRefresh(img);
         return img;
     }

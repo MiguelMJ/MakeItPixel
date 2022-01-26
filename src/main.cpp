@@ -14,6 +14,54 @@ extern int yylex_destroy();
 using namespace std;
 using namespace mipa;
 
+
+// for readline
+// https://eli.thegreenplace.net/2016/basics-of-using-the-readline-library/
+std::vector<std::string> vocabulary;
+void update_vocabulary(){
+    vocabulary.clear();
+    for(auto& pair: ProgramState::symbolTable){
+        vocabulary.push_back(pair.first);
+    }
+    for(auto& pair: matrices){
+        vocabulary.push_back('"'+pair.first+'"');
+    }
+    for(auto& pair: BuiltInFunctions){
+        vocabulary.push_back("."+pair.first);
+        vocabulary.push_back(pair.first+"(");
+    }
+}
+char* completion_generator(const char* text, int state) {
+  static std::vector<std::string> matches;
+  static size_t match_index = 0;
+
+  if (state == 0) {
+    matches.clear();
+    match_index = 0;
+
+    std::string textstr = std::string(text);
+    for (auto word : vocabulary) {
+      if (word.size() >= textstr.size() &&
+          word.compare(0, textstr.size(), textstr) == 0) {
+        matches.push_back(word);
+      }
+    }
+  }
+
+  if (match_index >= matches.size()) {
+    return nullptr;
+  } else {
+    return strdup(matches[match_index++].c_str());
+  }
+}
+char** completer(const char* text, int /* start */, int end) {
+    if(end == 0){
+        rl_attempted_completion_over = 1; // don't complete filenames in blank lines
+        return nullptr;
+    }
+    return rl_completion_matches(text, completion_generator);
+}
+
 struct window{
     private:
     sf::RenderWindow rwindow;
@@ -50,7 +98,9 @@ struct window{
         mutex.unlock();
     }
     void refresh(const sf::Image& img){
+        std::cout << "..." << std::endl;
         mutex.lock();
+        std::cout << "refreshing" << std::endl;
         auto imgSize = img.getSize();
         if(imgSize.x > texture.getSize().x || imgSize.y > texture.getSize().y){
             texture.create(imgSize.x, imgSize.y);
@@ -58,6 +108,7 @@ struct window{
         texture.update(img);
         rwindow.setSize(imgSize);
         adjustView(imgSize);
+        std::cout << "done" << std::endl;
         mutex.unlock();
     }
     void process(){
@@ -98,11 +149,13 @@ void manage_window(window& w){
     while(!w.should_close.load()){
         while(w.check_open()){
             w.process();
+            std::this_thread::yield();
         };
     }
 }
 
 int main(){
+    rl_attempted_completion_function = completer;
 
     std::cout << "▙▗▌   ▌      ▜▘▐   ▛▀▖▗       ▜  ▐" << std::endl;
     std::cout << "▌▘▌▝▀▖▌▗▘▞▀▖ ▐ ▜▀  ▙▄▘▄ ▚▗▘▞▀▖▐  ▐" << std::endl;
@@ -119,10 +172,12 @@ int main(){
         try{
             // prompt(true);
             char* in;
-            in = readline("> ");
+            std::thread gb_thread(ProgramState::gb);
+            update_vocabulary();
+            in = readline(">> ");
             if(in == nullptr) break;
             if(*in) add_history(in);
-            
+            gb_thread.join();
             set_input_string(in);
             yyparse();
             end_lexical_scan();

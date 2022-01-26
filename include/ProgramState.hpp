@@ -26,6 +26,7 @@ namespace mipa{
         void unset(const std::string var);
         void maybeRefresh(ImageValue* val);
         void gb_constants();
+        void gb();
     }
 }
 

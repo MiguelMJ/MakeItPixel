@@ -7,6 +7,8 @@ namespace mipa{
         std::stack<Value*> constants;
         std::unordered_map<Value*, int> pointerCounter;
 
+        std::vector<Value*> garbage;
+
         bool finished = false;
         bool should_refresh = false;
         sf::Image* for_display = nullptr;   
@@ -24,7 +26,7 @@ namespace mipa{
             pointerCounter[val]--;
             if(pointerCounter[val] == 0){
                 pointerCounter.erase(val);
-                delete val;
+                garbage.push_back(val);
             }
         }
         void setConstant(Value* val){
@@ -69,6 +71,12 @@ namespace mipa{
                 uncountPointer(constants.top());
                 constants.pop();
             }
+        }
+        void gb(){
+            for(auto& v: garbage){
+                delete v;
+            }
+            garbage.clear();
         }
     }
 }
