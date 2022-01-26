@@ -1,3 +1,4 @@
+#include <cstdlib> // getenv
 #include <iostream>
 #include <atomic>
 #include <mutex>
@@ -81,7 +82,9 @@ struct window{
         return ret;
     }
     void close(){
-        rwindow.close();
+        mutex.lock();
+        if(rwindow.isOpen()) rwindow.close();
+        mutex.unlock();
     }
     void adjustView(const sf::Vector2u& size){
         sf::View view({(float)size.x/2, (float)size.y/2}, {(float)size.x, (float)size.y});
@@ -129,7 +132,7 @@ struct window{
         mutex.unlock();
     }
     ~window(){
-        rwindow.close();
+        // if(rwindow.isOpen()) rwindow.close();
     }
     void available(bool flag){
         if (flag == m_available) return;
@@ -151,11 +154,18 @@ void manage_window(window& w){
             w.process();
             std::this_thread::yield();
         };
+        std::this_thread::yield();
     }
 }
 
 int main(){
+    std::string historyfilestr=getenv("HOME");
+    historyfilestr.append("/.mip_history");
+    const char* historyfile=historyfilestr.c_str();
+    std::cout << historyfile << std::endl;
+    using_history();
     rl_attempted_completion_function = completer;
+    read_history(historyfile);
 
     std::cout << "▙▗▌   ▌      ▜▘▐   ▛▀▖▗       ▜  ▐" << std::endl;
     std::cout << "▌▘▌▝▀▖▌▗▘▞▀▖ ▐ ▜▀  ▙▄▘▄ ▚▗▘▞▀▖▐  ▐" << std::endl;
@@ -175,12 +185,19 @@ int main(){
             std::thread gb_thread(ProgramState::gb);
             update_vocabulary();
             in = readline(">> ");
-            if(in == nullptr) break;
-            if(*in) add_history(in);
             gb_thread.join();
-            set_input_string(in);
-            yyparse();
-            end_lexical_scan();
+            if(in == nullptr){ 
+                std::cout << "Fin input" << std::endl;
+                mipa::ProgramState::finished = true;
+                free(in);
+                continue;
+            }
+            if(*in){
+                add_history(in);
+                set_input_string(in);
+                yyparse();
+                end_lexical_scan();
+            }
             
             free(in);
 
@@ -192,23 +209,19 @@ int main(){
                     win.refresh(*mipa::ProgramState::for_display);
                 }
                 mipa::ProgramState::should_refresh = false;
+            }else if(win.available() && !win.check_open()){
+                win.available(false);
             }
         }catch(const std::runtime_error& err){
             std::cerr << "Error: " << err.what() << std::endl;
             // yylex_destroy();
-        }catch(int signal){ // signals are not errors
-            switch(signal){
-                case 0:
-                    // exit signal
-                    break;
-                default:
-                    std::cerr << "Internal error: Unknown signal: " << signal << std::endl;
-            }
         }
     }
     win.available(true);
     win.should_close.store(true);
     win.close();
+    write_history(historyfile);
+    history_truncate_file(historyfile, 100);
     window_thread.join();
     return 0;
 }

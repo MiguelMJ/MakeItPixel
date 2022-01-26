@@ -32,7 +32,7 @@
 
 program : _statement
         | _statement sep program {}
-        | YYEOF { /* mipa::ProgramState::finished = true; */ }
+        | YYEOF { mipa::ProgramState::finished = true; }
         ;
 
 sep : ';' | '\n' {prompt();} ;

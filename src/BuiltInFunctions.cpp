@@ -61,7 +61,6 @@ namespace mipa{
     Value* exit(argstack& args){
         assert_arity(args, 0);
         ProgramState::finished = true;
-        throw 0;
         return nullptr;
     }
 

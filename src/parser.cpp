@@ -1081,7 +1081,7 @@ yyreduce:
 
   case 4: /* program: $end  */
 #line 35 "src/parser.bison"
-                { /* mipa::ProgramState::finished = true; */ }
+                { mipa::ProgramState::finished = true; }
 #line 1086 "src/parser.cpp"
     break;
 
