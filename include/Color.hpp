@@ -36,10 +36,10 @@ namespace mipa{
      * @brief Auxiliar structure to represent color in HSV space.
      */
     typedef struct {
-        float h=0;
-        float s=0;
-        float v=0;
-        int a=0x255;
+        float h=0; /// Hue [0.0, 360.0)
+        float s=0; /// Saturation [0.0, 1.0]
+        float v=0; /// Value [0.0, 1.0]
+        int a=0x255; /// alpha [0, 255]
     } HSV;  
 
     /**
@@ -93,7 +93,7 @@ namespace mipa{
      * @brief Copy the color with a different saturation.
      * 
      * @param color Input color.
-     * @param saturation New saturation.
+     * @param s New saturation.
      * @return RGB 
      */
     RGB saturation(const RGB& color, float s);
