@@ -20,13 +20,14 @@
     mipa::Value *innervalue;
     std::stack<mipa::Value*> *stack;
 }
-%token IN
+%token IN SHIFTR SHIFTL LERP SATURATE DESATURATE LIGHTEN DARKEN GROP1 GROP2
 %token <innervalue> VALUE
 %token <string> VARIABLE
 
 %type <stack> argstack
 %type <innervalue> statement _statement function_call value
 
+%left SHIFTr SHIFTL LERP SATURATE DESATURATE LIGHTEN DARKEN GROP1 GROP2
 
 %%
 
@@ -80,6 +81,39 @@ value : VARIABLE {
           }
       | function_call { $$ = $1; mipa::ProgramState::setConstant($1); }
       | '[' argstack ']' { $$ = mipa::BuiltInFunctions.at("palette")(*$2); delete $2; }
+      | '(' value ')' { $$ = $2; }
+      | value SHIFTR value {
+            std::stack<mipa::Value*> argstack; argstack.push($1); argstack.push($3);
+            $$ = mipa::BuiltInFunctions.at("shiftHueRightOperator")(argstack); 
+          }
+      | value SHIFTL value { 
+            std::stack<mipa::Value*> argstack; argstack.push($1); argstack.push($3);
+            $$ = mipa::BuiltInFunctions.at("shiftHueLeftOperator")(argstack); 
+          }
+      | value LERP value value '%' { 
+            std::stack<mipa::Value*> argstack; argstack.push($1); 
+            argstack.push($3); argstack.push($4);
+            $$ = mipa::BuiltInFunctions.at("lerpOperator")(argstack); 
+          }
+      | value LIGHTEN value { 
+            std::stack<mipa::Value*> argstack; argstack.push($1); argstack.push($3);
+            $$ = mipa::BuiltInFunctions.at("lightenOperator")(argstack); }
+      | value DARKEN value { 
+            std::stack<mipa::Value*> argstack; argstack.push($1); argstack.push($3);
+            $$ = mipa::BuiltInFunctions.at("darkenOperator")(argstack); }
+      | value SATURATE { 
+            std::stack<mipa::Value*> argstack; argstack.push($1);
+            $$ = mipa::BuiltInFunctions.at("saturateOperator")(argstack); }
+      | value DESATURATE { 
+            std::stack<mipa::Value*> argstack; argstack.push($1);
+            $$ = mipa::BuiltInFunctions.at("desaturateOperator")(argstack); }
+      | value '[' value ']' { 
+            std::stack<mipa::Value*> argstack; argstack.push($1); argstack.push($3);
+            $$ = mipa::BuiltInFunctions.at("accessPaletteOperator")(argstack); }
+      | value GROP1 value GROP2 '(' value ')' { 
+            std::stack<mipa::Value*> argstack; argstack.push($1);
+            argstack.push($3); argstack.push($6);
+            $$ = mipa::BuiltInFunctions.at("gradientOperator")(argstack); }
       ;
 
 %%

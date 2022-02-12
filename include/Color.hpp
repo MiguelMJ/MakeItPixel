@@ -32,8 +32,9 @@ namespace mipa{
      */
     typedef sf::Color RGB;
     
-    /**
+    /*
      * @brief Auxiliar structure to represent color in HSV space.
+     * don't include it in the generated docs
      */
     typedef struct {
         float h=0; /// Hue [0.0, 360.0)
@@ -66,7 +67,7 @@ namespace mipa{
      */
     RGB toRGB(const HSV& hsv);
 
-    /**
+    /** 
      * @brief Convert color from RGB space to HSV. Keep the alpha value.
      * 
      * @param rgb Input color in RGB space.

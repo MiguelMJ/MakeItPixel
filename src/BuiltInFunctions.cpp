@@ -27,7 +27,7 @@ namespace mipa{
     
     void assert_type(const Value& val, ValueType type){
         if(val.type != type){
-            throw std::runtime_error("Incorrect type: expected "+typenames[type]+", got: "+typenames[val.type]);
+            throw std::runtime_error("Incorrect type: expected "+typenames[type]+", got: "+typenames[val.type] + " " + val.toString());
         }
     }
     
@@ -252,8 +252,124 @@ namespace mipa{
         ProgramState::maybeRefresh(img);
         return img;
     }
+    Value* shiftHueRightOperator(argstack& args){
+        assert_type(*args.top(), NUMBER);
+        float angle = ((NumberValue*)args.top())->number;
+        args.pop();
+        Value* op = args.top();
+        switch(op->type){
+            case COLOR:{
+                auto ret = new ColorValue(shiftHue(((ColorValue*)op)->color, angle));
+                return ret;
+                }
+            case PALETTE:{
+                auto pal = (PaletteValue*)op->copy();
+                for(auto& c: pal->palette){
+                    c = shiftHue(c, angle);
+                }
+                return pal;
+            }
+            break;
+            default:
+            throw std::runtime_error("Incorrect type: expected color or palette, got: "+typenames[op->type]);
+            break;                
+        }
+        return nullptr;
+    }
+    Value* shiftHueLeftOperator(argstack& args){
+        assert_type(*args.top(), NUMBER);
+        float angle = -((NumberValue*)args.top())->number;
+        args.pop();
+        Value* op = args.top();
+        switch(op->type){
+            case COLOR:{
+                auto ret = new ColorValue(shiftHue(((ColorValue*)op)->color, angle));
+                return ret;
+                }
+            case PALETTE:{
+                auto pal = (PaletteValue*)op->copy();
+                for(auto& c: pal->palette){
+                    c = shiftHue(c, angle);
+                }
+                return pal;
+            }
+            break;
+            default:
+            throw std::runtime_error("Incorrect type: expected color or palette, got: "+typenames[op->type]);
+            break;                
+        }
+        return nullptr;
+    }
+    Value* lightenOperator(argstack& args){
+        assert_type(*args.top(), NUMBER);
+        float factor = ((NumberValue*)args.top())->number;
+        args.pop();
+        Value* op = args.top();
+        switch(op->type){
+            case COLOR:{
+                auto ret = new ColorValue(lerp(((ColorValue*)op)->color, RGB(0xffffffff), factor));
+                return ret;
+                }
+            case PALETTE:{
+                auto pal = (PaletteValue*)op->copy();
+                for(auto& c: pal->palette){
+                    c = lerp(c, RGB(0xffffffff), factor);
+                }
+                return pal;
+            }
+            break;
+            default:
+            throw std::runtime_error("Incorrect type: expected color or palette, got: "+typenames[op->type]);
+            break;                
+        }
+        return nullptr;
+    }
+    Value* darkenOperator(argstack& args){
+        assert_type(*args.top(), NUMBER);
+        float factor = ((NumberValue*)args.top())->number;
+        args.pop();
+        Value* op = args.top();
+        switch(op->type){
+            case COLOR:{
+                auto ret = new ColorValue(lerp(((ColorValue*)op)->color, RGB(0xff), factor));
+                return ret;
+                }
+            case PALETTE:{
+                auto pal = (PaletteValue*)op->copy();
+                for(auto& c: pal->palette){
+                    c = lerp(c, RGB(0xff), factor);
+                }
+                return pal;
+            }
+            break;
+            default:
+            throw std::runtime_error("Incorrect type: expected color or palette, got: "+typenames[op->type]);
+            break;                
+        }
+        return nullptr;
+    }
+    Value* saturateOperator(argstack&){
+        return nullptr;
+    }
+    Value* desaturateOperator(argstack&){
+        return nullptr;
+    }
+    Value* accessPaletteOperator(argstack&){
+        return nullptr;
+    }
+    Value* gradientOperator(argstack&){
+        return nullptr;
+    }
 
     const std::map<std::string, BuiltInFunction> BuiltInFunctions = {
+        {"accessPaletteOperator", accessPaletteOperator},
+        {"gradientOperator", gradientOperator},
+        {"desaturateOperator", desaturateOperator},
+        {"saturateOperator", saturateOperator},
+        {"darkenOperator", darkenOperator},
+        {"lightenOperator", lightenOperator},
+        {"shiftHueLeftOperator", shiftHueLeftOperator},
+        {"shiftHueRightOperator", shiftHueRightOperator},
         {"closest_rgb", closest_rgb},
         {"direct", direct},
         {"dither_ord", dither_ord},

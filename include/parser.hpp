@@ -71,8 +71,18 @@ extern int yydebug;
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
     IN = 258,                      /* IN  */
-    VALUE = 259,                   /* VALUE  */
-    VARIABLE = 260                 /* VARIABLE  */
+    SHIFTR = 259,                  /* SHIFTR  */
+    SHIFTL = 260,                  /* SHIFTL  */
+    LERP = 261,                    /* LERP  */
+    SATURATE = 262,                /* SATURATE  */
+    DESATURATE = 263,              /* DESATURATE  */
+    LIGHTEN = 264,                 /* LIGHTEN  */
+    DARKEN = 265,                  /* DARKEN  */
+    GROP1 = 266,                   /* GROP1  */
+    GROP2 = 267,                   /* GROP2  */
+    VALUE = 268,                   /* VALUE  */
+    VARIABLE = 269,                /* VARIABLE  */
+    SHIFTr = 270                   /* SHIFTr  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -87,7 +97,7 @@ union YYSTYPE
     mipa::Value *innervalue;
     std::stack<mipa::Value*> *stack;
 
-#line 91 "include/parser.hpp"
+#line 101 "include/parser.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -107,6 +117,6 @@ int yyparse (void);
   extern void set_input_string(const char* in);
   extern void end_lexical_scan(void);
 
-#line 111 "include/parser.hpp"
+#line 121 "include/parser.hpp"
 
 #endif /* !YY_YY_INCLUDE_PARSER_HPP_INCLUDED  */

@@ -39,7 +39,7 @@
     return VALUE;
     }
 
-#[0-9a-zA-Z][0-9a-zA-Z][0-9a-zA-Z][0-9a-zA-Z][0-9a-zA-Z][0-9a-zA-Z] { 
+#[0-9a-zA-Z]?[0-9a-zA-Z]?[0-9a-zA-Z]?[0-9a-zA-Z]?[0-9a-zA-Z]?[0-9a-zA-Z]? { 
       std::stringstream ss(&yytext[1]);
       RGB rgb;
       ss >> rgb;
@@ -48,6 +48,16 @@
     }
 
 [a-zA-Z][_a-zA-Z0-9]* {strcpy(yylval.string,yytext); return VARIABLE; }
+
+">>" {return SHIFTR;}
+"<<" {return SHIFTL;}
+"<>" {return LERP;}
+"^^" {return LIGHTEN;}
+".." {return DARKEN;}
+"!" {return SATURATE;}
+"?" {return DESATURATE;}
+"=<" {return GROP1;}
+">=>" {return GROP2;}
 
 [()\n;=,.\[\]]   { return yytext[0]; }
 
