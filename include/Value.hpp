@@ -101,6 +101,9 @@ namespace mipa{
         virtual Value* copy() const override{
             return new ColorStrategyValue;
         }
+        virtual float recommended_sparsity() const{
+            return 254;
+        };
     };
     struct PaletteColorStrategyValue: public ColorStrategyValue{
         Palette palette;
@@ -112,13 +115,69 @@ namespace mipa{
             std::stringstream ss;
             ss << "{Palette Picker " << PaletteValue(palette).toString() << "}";
             return ss.str();
-        };
+        }
         inline Value* copy() const override{
             auto pcsv = new PaletteColorStrategyValue;
             pcsv->palette = palette;
             pcsv->picker = picker;
             return pcsv;
         }
+        virtual float recommended_sparsity() const{
+            return std::sqrt(palette.size());
+        };
+    };
+    struct DiscreteRGBColorStrategyValue: public ColorStrategyValue{
+        uint r_values;
+        uint g_values;
+        uint b_values;
+        inline DiscreteRGBColorStrategyValue(uint r, uint g, uint b):
+            ColorStrategyValue(), r_values(255/r), g_values(255/g), b_values(255/b)
+            {}
+        inline RGB operator()(const RGB& rgb) const override{
+            return RGB(
+                rgb.r - rgb.r % r_values,
+                rgb.g - rgb.g % g_values,
+                rgb.b - rgb.b % b_values
+            );
+        }
+        inline std::string toString() const override{
+            std::stringstream ss;
+            ss << "{Discrete RGB Picker: " << r_values << ", " << g_values << ", " << b_values << "}";
+            return ss.str();
+        }
+        inline Value* copy() const override{
+            return new DiscreteRGBColorStrategyValue(*this);
+        }
+        virtual float recommended_sparsity() const{
+            return std::max(r_values, std::max(b_values, b_values));
+        };
+    };
+    struct DiscreteHSVColorStrategyValue: public ColorStrategyValue{
+        uint h_values;
+        uint s_values;
+        uint v_values;
+        inline DiscreteHSVColorStrategyValue(uint h, uint s, uint v):
+            ColorStrategyValue(), h_values(360/h), s_values(100/s), v_values(100/v)
+            {}
+        inline RGB operator()(const RGB& rgb) const override{
+            HSV hsv = toHSV(rgb);
+            HSV out;
+            out.h = hsv.h - ((int)hsv.h % h_values);
+            out.s = hsv.s - (float)((int)(hsv.s * 100) % s_values)/100;
+            out.v = hsv.v - (float)((int)(hsv.v * 100) % v_values)/100;
+            return toRGB(out);
+        }
+        inline std::string toString() const override{
+            std::stringstream ss;
+            ss << "{Discrete HSV Picker: " << h_values << ", " << s_values << ", " << v_values << "}";
+            return ss.str();
+        }
+        inline Value* copy() const override{
+            return new DiscreteHSVColorStrategyValue(*this);
+        }
+        virtual float recommended_sparsity() const{
+            return std::max(h_values, std::max(s_values, v_values));
+        };
     };
     struct QuantizerValue: public Value{
         inline QuantizerValue(): Value(QUANTIZER){}
@@ -141,7 +200,11 @@ namespace mipa{
         std::string matrixName;
         float sparsity, threshold;
         void apply(sf::Image& img, ColorStrategyValue* strategy) const override{
-            ditherOrdered(img, strategy, matrices.at(matrixName), sparsity, threshold);
+            float real_sparsity = sparsity;
+            if(real_sparsity == -1){
+                real_sparsity = strategy->recommended_sparsity();
+            }
+            ditherOrdered(img, strategy, matrices.at(matrixName), real_sparsity, threshold);
         }
         inline std::string toString() const override{
             return "{Ordered Dither: "+matrixName+"}";

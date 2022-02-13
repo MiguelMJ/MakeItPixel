@@ -269,7 +269,7 @@ namespace mipa{
             throw std::runtime_error("Incorrect number of arguments. Expected 0, 1, 2 or 3: got "+std::to_string(args.size()));
         }
         std::string matrix="Bayes2";
-        float sparsity = 3;
+        float sparsity = -1;
         float threshold = 0;
         if(!args.empty()){
             assert_type(*args.top(), STRING);
