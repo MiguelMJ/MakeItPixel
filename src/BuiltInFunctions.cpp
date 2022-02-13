@@ -184,6 +184,21 @@ namespace mipa{
         return nullptr;
     }
 
+    Value* undo(argstack& args){
+        while(!args.empty()){
+            Value* arg = args.top();
+            args.pop();
+            assert_type(*arg, STRING);
+            std::string varname = ((StringValue*)arg)->string;
+            auto it = ProgramState::symbolStack.find(varname);
+            if(it == ProgramState::symbolStack.end() || it->second.empty()){
+                throw std::runtime_error(varname+" has no stacked value");
+            }
+            ProgramState::set(varname, it->second.top());
+        }
+        return nullptr;
+    }
+
     Value* stack(argstack& ){
         for(auto& pair: ProgramState::symbolStack){
             if(pair.second.empty()) continue;
@@ -522,6 +537,7 @@ namespace mipa{
         {"stack", stack},
         {"push", push},
         {"pop", pop},
+        {"undo", undo},
         {"palette", palette},
         {"hsv", hsv},
         {"rgb", rgb},
