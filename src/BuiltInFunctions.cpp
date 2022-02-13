@@ -513,6 +513,8 @@ namespace mipa{
         {"shiftHueLeftOperator", shiftHueLeftOperator},
         {"shiftHueRightOperator", shiftHueRightOperator},
         {"closest_rgb", closest_rgb},
+        {"closest_gray", closest_gray},
+        {"closest_hue", closest_hue},
         {"direct", direct},
         {"dither_fs", dither_fs},
         {"dither_ord", dither_ord},
