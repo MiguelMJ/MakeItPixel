@@ -1,3 +1,5 @@
+#define VERSION "0.0"
+
 #include <cstdlib> // getenv
 #include <iostream>
 #include <atomic>
@@ -97,7 +99,7 @@ struct window{
         auto imgSize = img.getSize();
         texture.create(imgSize.x, imgSize.y);
         texture.update(img);
-        rwindow.create(sf::VideoMode(imgSize.x,imgSize.y), std::string("Make It Pixel"), sf::Style::Close);
+        rwindow.create(sf::VideoMode(imgSize.x,imgSize.y), std::string("Make It Pixel"), sf::Style::None);
         adjustView(imgSize);
         rwindow.setFramerateLimit(30);
         mutex.unlock();
@@ -160,20 +162,22 @@ void manage_window(window& w){
     }
 }
 
-int main(){
+int interactive_mode(bool quiet){
     std::string historyfilestr=getenv("HOME");
     historyfilestr.append("/.mip_history");
     const char* historyfile=historyfilestr.c_str();
-    std::cout << historyfile << std::endl;
     using_history();
     rl_attempted_completion_function = completer;
     read_history(historyfile);
-
-    std::cout << "▙▗▌   ▌      ▜▘▐   ▛▀▖▗       ▜  ▐" << std::endl;
-    std::cout << "▌▘▌▝▀▖▌▗▘▞▀▖ ▐ ▜▀  ▙▄▘▄ ▚▗▘▞▀▖▐  ▐" << std::endl;
-    std::cout << "▌ ▌▞▀▌▛▚ ▛▀  ▐ ▐ ▖ ▌  ▐ ▗▚ ▛▀ ▐  ▐" << std::endl;
-    std::cout << "▘ ▘▝▀▘▘ ▘▝▀▘ ▀▘ ▀  ▘  ▀▘▘ ▘▝▀▘ ▘ ▗" << std::endl;
-    std::cout << "------------------------------------------" << std::endl;
+    if(!quiet){
+        std::cout << "▙▗▌   ▌      ▜▘▐   ▛▀▖▗       ▜  ▐" << std::endl;
+        std::cout << "▌▘▌▝▀▖▌▗▘▞▀▖ ▐ ▜▀  ▙▄▘▄ ▚▗▘▞▀▖▐  ▐" << std::endl;
+        std::cout << "▌ ▌▞▀▌▛▚ ▛▀  ▐ ▐ ▖ ▌  ▐ ▗▚ ▛▀ ▐  ▐" << std::endl;
+        std::cout << "▘ ▘▝▀▘▘ ▘▝▀▘ ▀▘ ▀  ▘  ▀▘▘ ▘▝▀▘ ▘ ▗" << std::endl;
+        std::cout << "v" << VERSION << std::endl;
+        std::cout << "Interactive mode" << std::endl;
+        std::cout << "----------------------------------" << std::endl;
+    }
 
     window win;
     win.available(false);
@@ -225,5 +229,60 @@ int main(){
     write_history(historyfile);
     history_truncate_file(historyfile, 100);
     window_thread.join();
+    return 0;
+}
+
+int main(int argc, char** argv){
+    bool interactive = false;
+    bool eval = false;
+    bool quiet = false;
+    std::vector<std::string> params;
+    for(int i = 1; i < argc; i++){
+        std::string arg(argv[i]);
+        if(arg[0] == '-'){
+            if(arg == "-q" || arg == "--quiet"){
+                quiet = true;
+            }else if(arg == "-e" || arg == "--eval"){
+                eval = true;
+            }else if(arg == "-v" || arg == "--version"){
+                std::cout << VERSION << std::endl;
+                return 0;
+            }else{
+                std::cerr << "Error: Unrecognized option "+arg << std::endl;
+                return -1;
+            }
+        }else{
+            params.push_back(arg);
+        }
+    }
+    interactive = params.empty() && ! eval;
+    if(interactive){
+        return interactive_mode(quiet);
+    }
+    if(eval){
+        std::stringstream ss;
+        for(auto& st: params){
+            ss << st << ' ';
+        }
+        try{
+            set_input_string(ss.str().c_str());
+            yyparse();
+            end_lexical_scan();
+            return 0;
+        }catch(const std::runtime_error& err){
+            std::cerr << "Error: " << err.what() << std::endl;
+            return -1;
+        }
+    }
+    for(uint i = 0; i < params.size(); i++){
+        mipa::ProgramState::set("_"+std::to_string(i), new mipa::StringValue(params[i]));
+    }
+    FILE *infile = fopen(params[0].c_str(), "r");
+    if(!infile){
+        std::cerr << "Error: Unable to open "+params[0] << std::endl;
+        return -1;
+    }
+    yyin = infile;
+    yyparse();
     return 0;
 }
