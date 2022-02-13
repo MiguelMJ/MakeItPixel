@@ -47,7 +47,7 @@
       return VALUE; 
     }
 
-[a-zA-Z][_a-zA-Z0-9]* {strcpy(yylval.string,yytext); return VARIABLE; }
+[_a-zA-Z][_a-zA-Z0-9]* {strcpy(yylval.string,yytext); return VARIABLE; }
 
 ">>" {return SHIFTR;}
 "<<" {return SHIFTL;}
