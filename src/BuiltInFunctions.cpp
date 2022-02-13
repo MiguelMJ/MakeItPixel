@@ -348,17 +348,61 @@ namespace mipa{
         }
         return nullptr;
     }
-    Value* saturateOperator(argstack&){
-        return nullptr;
+    Value* saturateOperator(argstack& args){
+        assert_type(*args.top(), COLOR);
+        return new ColorValue( saturation( ((ColorValue*)args.top())->color, 0.9999999 ) );
     }
-    Value* desaturateOperator(argstack&){
-        return nullptr;
+    Value* desaturateOperator(argstack& args){
+        assert_type(*args.top(), COLOR);
+        return new ColorValue( saturation( ((ColorValue*)args.top())->color, 0.0000001 ) );
     }
-    Value* accessPaletteOperator(argstack&){
-        return nullptr;
+    Value* accessPaletteOperator(argstack& args){
+        assert_type(*args.top(), NUMBER);
+        uint index = ((NumberValue*)args.top())->number;
+        args.pop();
+        assert_type(*args.top(), PALETTE);
+        auto& pal = ((PaletteValue*)args.top())->palette;
+        if(pal.size() <= index) throw std::runtime_error("Out of range");
+        return new ColorValue(pal[index]);
     }
-    Value* gradientOperator(argstack&){
-        return nullptr;
+    Value* gradientOperator(argstack& args){
+        Value* op2 = args.top();
+        args.pop();
+        assert_type(*args.top(), NUMBER);
+        uint steps = ((NumberValue*)args.top())->number;
+        args.pop();
+        Value* op1 = args.top();
+        PaletteValue* ret;
+        if(op1->type == op2->type){
+            if(op1->type == COLOR){
+                ret = new PaletteValue(gradient(
+                    {((ColorValue*)op1)->color},
+                    {((ColorValue*)op2)->color},
+                    steps
+                ));
+            }else{
+                ret = new PaletteValue(gradient(
+                    ((PaletteValue*)op1)->palette,
+                    ((PaletteValue*)op2)->palette,
+                    steps
+                ));
+            }
+        }else{
+            if(op1->type == COLOR){
+                ret = new PaletteValue(gradient(
+                    {((ColorValue*)op1)->color},
+                    ((PaletteValue*)op2)->palette,
+                    steps
+                ));
+            }else{
+                ret = new PaletteValue(gradient(
+                    ((PaletteValue*)op1)->palette,
+                    {((ColorValue*)op2)->color},
+                    steps
+                ));
+            }
+        }
+        return ret;
     }
 
     const std::map<std::string, BuiltInFunction> BuiltInFunctions = {

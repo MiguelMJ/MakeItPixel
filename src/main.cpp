@@ -28,8 +28,10 @@ void update_vocabulary(){
         vocabulary.push_back('"'+pair.first+'"');
     }
     for(auto& pair: BuiltInFunctions){
-        vocabulary.push_back("."+pair.first);
-        vocabulary.push_back(pair.first+"(");
+        if(pair.first.size() < 8 || pair.first.substr(pair.first.size() - 8) != "Operator"){
+            vocabulary.push_back("."+pair.first);
+            vocabulary.push_back(pair.first+"(");
+        }
     }
 }
 char* completion_generator(const char* text, int state) {
