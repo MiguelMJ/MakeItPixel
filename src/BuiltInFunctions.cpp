@@ -214,6 +214,36 @@ namespace mipa{
         return pcsv;
     }
     
+    Value* closest_gray(argstack& args){
+        assert_arity(args, 1);
+        assert_type(*args.top(), PALETTE);
+        auto pcsv = new PaletteColorStrategyValue;
+        pcsv->palette = ((PaletteValue*)args.top())->palette;
+        pcsv->picker = [](const Palette& p, const RGB& rgb)->RGB{
+                return closestByBrightness(p, rgb)[0];
+            };
+        return pcsv;
+    }
+    
+    Value* closest_hue(argstack& args){
+        assert_arity(args, 1);
+        assert_type(*args.top(), PALETTE);
+        auto pcsv = new PaletteColorStrategyValue;
+        pcsv->palette = ((PaletteValue*)args.top())->palette;
+        pcsv->picker = [](const Palette& p, const RGB& rgb)->RGB{
+                float mindiff = 360.f;
+                int index = -1;
+                float h = toHSV(rgb).h;
+                for(uint i = 0; i < p.size(); i++){
+                    if(std::abs(toHSV(p[i]).h - h) < mindiff){
+                        index = i;
+                    }
+                }
+                return p.at(index);
+            };
+        return pcsv;
+    }
+    
     Value* direct(argstack& args){
         assert_arity(args, 0);
         return new DirectQuantizerValue();
@@ -221,7 +251,7 @@ namespace mipa{
     
     Value* dither_ord(argstack& args){
         if(args.size() > 3){
-            throw std::runtime_error("Incorrect number of arguments: got: "+std::to_string(args.size()));
+            throw std::runtime_error("Incorrect number of arguments. Expected 0, 1, 2 or 3: got "+std::to_string(args.size()));
         }
         std::string matrix="Bayes2";
         float sparsity = 3;
@@ -249,6 +279,20 @@ namespace mipa{
         return dither;
     }
     
+    Value* dither_fs(argstack& args){
+        if(args.size() > 1){
+            throw std::runtime_error("Incorrect number of arguments. Expected 0 or 1: got "+std::to_string(args.size()));
+        }
+        float threshold = 0;
+        if(!args.empty()){
+            assert_type(*args.top(), NUMBER);
+            threshold = ((NumberValue*)args.top())->number;
+        }
+        auto dither = new FSDitherQuantizerValue();
+        dither->threshold = threshold;
+        return dither;
+    }
+
     Value* quantize(argstack& args){
         assert_arity(args, 3);
         assert_type(*args.top(), IMAGE);
@@ -373,7 +417,7 @@ namespace mipa{
     
     Value* desaturateOperator(argstack& args){
         assert_type(*args.top(), COLOR);
-        return new ColorValue( grayscale ( ((ColorValue*)args.top())->color, 0.0000001 ) );
+        return new ColorValue( grayScale ( ((ColorValue*)args.top())->color) );
     }
     
     Value* accessPaletteOperator(argstack& args){
@@ -470,6 +514,7 @@ namespace mipa{
         {"shiftHueRightOperator", shiftHueRightOperator},
         {"closest_rgb", closest_rgb},
         {"direct", direct},
+        {"dither_fs", dither_fs},
         {"dither_ord", dither_ord},
         {"quantize", quantize},
         {"stack", stack},

@@ -147,7 +147,19 @@ namespace mipa{
             return "{Ordered Dither: "+matrixName+"}";
         }
         inline Value* copy() const override{
-            return new DirectQuantizerValue();
+            return new OrderedDitherQuantizerValue(*this);
+        }
+    };
+    struct FSDitherQuantizerValue: public QuantizerValue{
+        float threshold;
+        void apply(sf::Image& img, ColorStrategyValue* strategy) const override{
+            ditherFloydSteinberg(img, strategy, threshold);
+        }
+        inline std::string toString() const override{
+            return "{Error Propagation Dither}";
+        }
+        inline Value* copy() const override{
+            return new FSDitherQuantizerValue(*this);
         }
     };
 
