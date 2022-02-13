@@ -258,6 +258,36 @@ namespace mipa{
             };
         return pcsv;
     }
+
+    Value* discretize_rgb(argstack& args){
+        assert_arity(args, 3);
+        uint r, g, b;
+        assert_type(*args.top(), NUMBER);
+        r = ((NumberValue*)args.top())->number;
+        args.pop();
+        assert_type(*args.top(), NUMBER);
+        g = ((NumberValue*)args.top())->number;
+        args.pop();
+        assert_type(*args.top(), NUMBER);
+        b = ((NumberValue*)args.top())->number;
+        args.pop();
+        return new DiscreteRGBColorStrategyValue(r, g, b);
+    }
+    
+    Value* discretize_hsv(argstack& args){
+        assert_arity(args, 3);
+        uint h, s, v;
+        assert_type(*args.top(), NUMBER);
+        h = ((NumberValue*)args.top())->number;
+        args.pop();
+        assert_type(*args.top(), NUMBER);
+        s = ((NumberValue*)args.top())->number;
+        args.pop();
+        assert_type(*args.top(), NUMBER);
+        v = ((NumberValue*)args.top())->number;
+        args.pop();
+        return new DiscreteHSVColorStrategyValue(h, s, v);
+    }
     
     Value* direct(argstack& args){
         assert_arity(args, 0);
@@ -318,9 +348,7 @@ namespace mipa{
         args.pop();
         assert_type(*args.top(), QUANTIZER);
         QuantizerValue *quant =(QuantizerValue*)args.top();
-        std::cout << "..." << std::endl;
         quant->apply(img->image, strategy);
-        std::cout << "done" << std::endl;
         ProgramState::maybeRefresh(img);
         return img;
     }
@@ -602,6 +630,8 @@ namespace mipa{
         {"closest_rgb", closest_rgb},
         {"closest_gray", closest_gray},
         {"closest_hue", closest_hue},
+        {"discretize_rgb", discretize_rgb},
+        {"discretize_hsv", discretize_hsv},
         {"direct", direct},
         {"dither_fs", dither_fs},
         {"dither_ord", dither_ord},
