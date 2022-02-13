@@ -141,8 +141,17 @@ namespace mipa{
         while(!args.empty()){
             Value* val = args.top();
             args.pop();
-            assert_type(*val, COLOR);
-            palette.push_back(((ColorValue*)val)->color);
+            switch(val->type){
+                case COLOR:
+                    palette.push_back(((ColorValue*)val)->color);
+                break;
+                case PALETTE:{
+                    auto& subpal = ((PaletteValue*)val)->palette;
+                    palette.insert(palette.end(), subpal.begin(), subpal.end());
+                }break;
+                default:
+                    throw std::runtime_error("Incorrect type: expected Color or Palette, got: "+typenames[val->type] + " " + val->toString());
+            }
         }
         return new PaletteValue(palette);        
     }
@@ -193,6 +202,7 @@ namespace mipa{
         }
         return nullptr;
     }
+    
     Value* closest_rgb(argstack& args){
         assert_arity(args, 1);
         assert_type(*args.top(), PALETTE);
@@ -203,10 +213,12 @@ namespace mipa{
             };
         return pcsv;
     }
+    
     Value* direct(argstack& args){
         assert_arity(args, 0);
         return new DirectQuantizerValue();
     }
+    
     Value* dither_ord(argstack& args){
         if(args.size() > 3){
             throw std::runtime_error("Incorrect number of arguments: got: "+std::to_string(args.size()));
@@ -236,6 +248,7 @@ namespace mipa{
         dither->threshold = threshold;
         return dither;
     }
+    
     Value* quantize(argstack& args){
         assert_arity(args, 3);
         assert_type(*args.top(), IMAGE);
@@ -252,6 +265,7 @@ namespace mipa{
         ProgramState::maybeRefresh(img);
         return img;
     }
+    
     Value* shiftHueRightOperator(argstack& args){
         assert_type(*args.top(), NUMBER);
         float angle = ((NumberValue*)args.top())->number;
@@ -276,6 +290,7 @@ namespace mipa{
         }
         return nullptr;
     }
+    
     Value* shiftHueLeftOperator(argstack& args){
         assert_type(*args.top(), NUMBER);
         float angle = -((NumberValue*)args.top())->number;
@@ -300,6 +315,7 @@ namespace mipa{
         }
         return nullptr;
     }
+    
     Value* lightenOperator(argstack& args){
         assert_type(*args.top(), NUMBER);
         float factor = ((NumberValue*)args.top())->number;
@@ -324,6 +340,7 @@ namespace mipa{
         }
         return nullptr;
     }
+    
     Value* darkenOperator(argstack& args){
         assert_type(*args.top(), NUMBER);
         float factor = ((NumberValue*)args.top())->number;
@@ -348,14 +365,17 @@ namespace mipa{
         }
         return nullptr;
     }
+    
     Value* saturateOperator(argstack& args){
         assert_type(*args.top(), COLOR);
         return new ColorValue( saturation( ((ColorValue*)args.top())->color, 0.9999999 ) );
     }
+    
     Value* desaturateOperator(argstack& args){
         assert_type(*args.top(), COLOR);
-        return new ColorValue( saturation( ((ColorValue*)args.top())->color, 0.0000001 ) );
+        return new ColorValue( grayscale ( ((ColorValue*)args.top())->color, 0.0000001 ) );
     }
+    
     Value* accessPaletteOperator(argstack& args){
         assert_type(*args.top(), NUMBER);
         uint index = ((NumberValue*)args.top())->number;
@@ -365,6 +385,7 @@ namespace mipa{
         if(pal.size() <= index) throw std::runtime_error("Out of range");
         return new ColorValue(pal[index]);
     }
+    
     Value* gradientOperator(argstack& args){
         Value* op2 = args.top();
         args.pop();
@@ -405,7 +426,40 @@ namespace mipa{
         return ret;
     }
 
+    Value* display(argstack& args){
+        if(args.size() != 1 && args.size() != 2){
+            throw std::runtime_error("Incorrect number of arguments: expected 1 or 2, got: " + std::to_string(args.size()));
+        }
+        assert_type(*args.top(), PALETTE);
+        auto& p = ((PaletteValue*)args.top())->palette;
+        args.pop();
+        uint rows = 1;
+        if(!args.empty()){
+            assert_type(*args.top(), NUMBER);
+            rows = ((NumberValue*)args.top())->number;
+        }
+        uint cols = p.size()/rows;
+        uint width = cols * 50;
+        uint height = rows * 100;
+        sf::Image img;
+        img.create(width, height);
+        for(uint j = 0; j < height; j++){
+            for(uint i = 0; i < width; i++){
+                RGB color;
+                try{
+                    color = p[(j/100)*(p.size()/rows)+i/50];
+                }catch(const std::out_of_range& err){
+                    color = RGB(0);
+                }
+                img.setPixel(i,j,color);
+            }
+        }
+        return new ImageValue(img);
+    }
+
+
     const std::map<std::string, BuiltInFunction> BuiltInFunctions = {
+        {"display", display},
         {"accessPaletteOperator", accessPaletteOperator},
         {"gradientOperator", gradientOperator},
         {"desaturateOperator", desaturateOperator},
