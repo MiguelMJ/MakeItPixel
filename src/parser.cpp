@@ -108,25 +108,24 @@ enum yysymbol_kind_t
   YYSYMBOL_GROP2 = 12,                     /* GROP2  */
   YYSYMBOL_VALUE = 13,                     /* VALUE  */
   YYSYMBOL_VARIABLE = 14,                  /* VARIABLE  */
-  YYSYMBOL_SHIFTr = 15,                    /* SHIFTr  */
-  YYSYMBOL_16_ = 16,                       /* ';'  */
-  YYSYMBOL_17_n_ = 17,                     /* '\n'  */
-  YYSYMBOL_18_ = 18,                       /* '='  */
-  YYSYMBOL_19_ = 19,                       /* '('  */
-  YYSYMBOL_20_ = 20,                       /* ')'  */
-  YYSYMBOL_21_ = 21,                       /* '.'  */
-  YYSYMBOL_22_ = 22,                       /* ','  */
-  YYSYMBOL_23_ = 23,                       /* '['  */
-  YYSYMBOL_24_ = 24,                       /* ']'  */
-  YYSYMBOL_25_ = 25,                       /* '%'  */
-  YYSYMBOL_YYACCEPT = 26,                  /* $accept  */
-  YYSYMBOL_program = 27,                   /* program  */
-  YYSYMBOL_sep = 28,                       /* sep  */
-  YYSYMBOL__statement = 29,                /* _statement  */
-  YYSYMBOL_statement = 30,                 /* statement  */
-  YYSYMBOL_function_call = 31,             /* function_call  */
-  YYSYMBOL_argstack = 32,                  /* argstack  */
-  YYSYMBOL_value = 33                      /* value  */
+  YYSYMBOL_15_ = 15,                       /* ';'  */
+  YYSYMBOL_16_n_ = 16,                     /* '\n'  */
+  YYSYMBOL_17_ = 17,                       /* '='  */
+  YYSYMBOL_18_ = 18,                       /* '('  */
+  YYSYMBOL_19_ = 19,                       /* ')'  */
+  YYSYMBOL_20_ = 20,                       /* '.'  */
+  YYSYMBOL_21_ = 21,                       /* ','  */
+  YYSYMBOL_22_ = 22,                       /* '['  */
+  YYSYMBOL_23_ = 23,                       /* ']'  */
+  YYSYMBOL_24_ = 24,                       /* '%'  */
+  YYSYMBOL_YYACCEPT = 25,                  /* $accept  */
+  YYSYMBOL_program = 26,                   /* program  */
+  YYSYMBOL_sep = 27,                       /* sep  */
+  YYSYMBOL__statement = 28,                /* _statement  */
+  YYSYMBOL_statement = 29,                 /* statement  */
+  YYSYMBOL_function_call = 30,             /* function_call  */
+  YYSYMBOL_argstack = 31,                  /* argstack  */
+  YYSYMBOL_value = 32                      /* value  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -454,19 +453,19 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  19
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   188
+#define YYLAST   166
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  26
+#define YYNTOKENS  25
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  8
 /* YYNRULES -- Number of rules.  */
 #define YYNRULES  29
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  57
+#define YYNSTATES  55
 
 /* YYMAXUTOK -- Last valid token kind.  */
-#define YYMAXUTOK   270
+#define YYMAXUTOK   269
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -481,15 +480,15 @@ union yyalloc
 static const yytype_int8 yytranslate[] =
 {
        0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      17,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      16,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,    25,     2,     2,
-      19,    20,     2,     2,    22,     2,    21,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,    16,
-       2,    18,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,    24,     2,     2,
+      18,    19,     2,     2,    21,     2,    20,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,    15,
+       2,    17,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,    23,     2,    24,     2,     2,     2,     2,     2,     2,
+       2,    22,     2,    23,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -506,17 +505,16 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
-       5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
-      15
+       5,     6,     7,     8,     9,    10,    11,    12,    13,    14
 };
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    34,    34,    35,    36,    39,    39,    41,    47,    51,
-      52,    55,    61,    70,    71,    72,    75,    78,    82,    83,
-      84,    85,    89,    93,    98,   101,   104,   107,   110,   113
+       0,    38,    38,    39,    40,    43,    43,    45,    51,    55,
+      56,    59,    65,    74,    75,    76,    79,    82,    86,    87,
+      88,    89,    93,    97,   102,   105,   108,   111,   114,   117
 };
 #endif
 
@@ -534,9 +532,9 @@ static const char *const yytname[] =
 {
   "\"end of file\"", "error", "\"invalid token\"", "IN", "SHIFTR",
   "SHIFTL", "LERP", "SATURATE", "DESATURATE", "LIGHTEN", "DARKEN", "GROP1",
-  "GROP2", "VALUE", "VARIABLE", "SHIFTr", "';'", "'\\n'", "'='", "'('",
-  "')'", "'.'", "','", "'['", "']'", "'%'", "$accept", "program", "sep",
-  "_statement", "statement", "function_call", "argstack", "value", YY_NULLPTR
+  "GROP2", "VALUE", "VARIABLE", "';'", "'\\n'", "'='", "'('", "')'", "'.'",
+  "','", "'['", "']'", "'%'", "$accept", "program", "sep", "_statement",
+  "statement", "function_call", "argstack", "value", YY_NULLPTR
 };
 
 static const char *
@@ -560,12 +558,12 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-      19,   -14,   -14,    -9,    -6,    -8,    -6,     3,    18,   -14,
-     -14,   165,    -6,    -6,    -5,   108,    -6,   -13,   116,   -14,
-     -14,   -14,    19,    -6,    -6,    -6,   -14,   -14,    -6,    -6,
-      -6,    -6,   165,    -4,   -14,   -14,   -14,    -6,   -14,   165,
-      -3,    88,    -3,    -3,   136,    80,   -14,   -14,    -6,    51,
-      -1,   -14,    59,   -14,    -6,   145,   -14
+      20,   -14,   -14,    -8,   144,   -13,   144,    11,    -9,   -14,
+     -14,    85,   144,   144,    -5,   114,   144,     4,   133,   -14,
+     -14,   -14,    20,   144,   144,   144,   -14,   -14,   144,   144,
+     144,   144,    85,    16,   -14,   -14,   -14,   144,   -14,    -3,
+      -3,    95,    10,    10,   141,    75,   -14,   -14,   144,    47,
+     144,   -14,    55,   -14,    14
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -578,13 +576,13 @@ static const yytype_int8 yydefact[] =
        5,     6,    10,     0,     0,     0,    26,    27,     0,     0,
        0,     0,     8,     0,    20,    12,    19,    15,     3,    21,
       22,     0,    24,    25,     0,     0,    11,    13,    15,     0,
-       0,    28,     0,    23,     0,     0,    29
+       0,    28,     0,    23,    29
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -14,     5,   -14,   -14,   -14,   -14,   -11,     0
+     -14,    15,   -14,   -14,   -14,   -14,   -11,     0
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
@@ -598,68 +596,64 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-      11,    23,    33,    19,    15,    35,    16,     2,    14,    12,
-      13,    36,    32,     4,    13,     5,    46,     6,    54,     1,
-      31,     0,    11,    39,    40,    41,    47,    38,    42,    43,
-      44,    45,     2,     3,    20,    21,     0,     0,     4,     0,
+      11,    16,    33,    25,    15,    35,    20,    21,    30,    12,
+      13,    19,    32,    13,    23,    24,    25,    26,    27,    31,
+       1,    30,    11,    39,    40,    41,    47,    36,    42,    43,
+      44,    45,    31,     2,     3,    46,    31,    38,     4,     0,
        5,    49,     6,     0,     0,     0,     0,     0,    52,     0,
-       0,     0,     0,     0,    55,    23,    24,    25,    26,    27,
-      28,    29,    30,    23,    24,    25,    26,    27,    28,    29,
-      30,     0,     0,     0,    31,     0,    53,     0,     0,     0,
-       0,    37,    31,    51,    23,    24,    25,    26,    27,    28,
-      29,    30,    23,    24,    25,    26,    27,    28,    29,    30,
-       0,     2,    14,    31,    51,     0,     0,     4,     0,     5,
-       0,    48,    23,    24,    25,    26,    27,    28,    29,    30,
-      23,    24,    25,    26,    27,    28,    29,    30,    34,     0,
-       0,    31,     0,     0,     0,     0,     0,     0,    37,    31,
-      23,    24,    25,    26,    27,    28,    29,    30,    50,    23,
+      54,    23,    24,    25,    26,    27,    28,    29,    30,    23,
       24,    25,    26,    27,    28,    29,    30,     0,     0,    31,
-       0,     0,     0,     0,     0,    56,     0,     0,    31,    23,
-      24,    25,    26,    27,    28,    29,    30,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,    31
+       0,    53,     0,     0,     0,     0,    37,    31,    51,    23,
+      24,    25,    26,    27,    28,    29,    30,     0,     0,    23,
+      24,    25,    26,    27,    28,    29,    30,    31,    51,    23,
+      24,    25,    26,    27,    28,    29,    30,    31,     2,    14,
+       0,     0,     0,     4,     0,     5,     0,    48,    23,    24,
+      25,    26,    27,    28,    29,    30,     0,     0,     0,     0,
+       0,     0,     0,    34,     0,     0,    31,    23,    24,    25,
+      26,    27,    28,    29,    30,    23,    24,    25,    26,    27,
+      28,    29,    30,    50,    37,    31,     0,     2,    14,     0,
+       0,     0,     4,    31,     5,     0,     6
 };
 
 static const yytype_int8 yycheck[] =
 {
-       0,     4,    13,     0,     4,    16,    14,    13,    14,    18,
-      19,    24,    12,    19,    19,    21,    20,    23,    19,     0,
-      23,    -1,    22,    23,    24,    25,    37,    22,    28,    29,
-      30,    31,    13,    14,    16,    17,    -1,    -1,    19,    -1,
-      21,    41,    23,    -1,    -1,    -1,    -1,    -1,    48,    -1,
-      -1,    -1,    -1,    -1,    54,     4,     5,     6,     7,     8,
-       9,    10,    11,     4,     5,     6,     7,     8,     9,    10,
-      11,    -1,    -1,    -1,    23,    -1,    25,    -1,    -1,    -1,
-      -1,    22,    23,    24,     4,     5,     6,     7,     8,     9,
-      10,    11,     4,     5,     6,     7,     8,     9,    10,    11,
-      -1,    13,    14,    23,    24,    -1,    -1,    19,    -1,    21,
-      -1,    23,     4,     5,     6,     7,     8,     9,    10,    11,
-       4,     5,     6,     7,     8,     9,    10,    11,    20,    -1,
-      -1,    23,    -1,    -1,    -1,    -1,    -1,    -1,    22,    23,
-       4,     5,     6,     7,     8,     9,    10,    11,    12,     4,
-       5,     6,     7,     8,     9,    10,    11,    -1,    -1,    23,
-      -1,    -1,    -1,    -1,    -1,    20,    -1,    -1,    23,     4,
-       5,     6,     7,     8,     9,    10,    11,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    23
+       0,    14,    13,     6,     4,    16,    15,    16,    11,    17,
+      18,     0,    12,    18,     4,     5,     6,     7,     8,    22,
+       0,    11,    22,    23,    24,    25,    37,    23,    28,    29,
+      30,    31,    22,    13,    14,    19,    22,    22,    18,    -1,
+      20,    41,    22,    -1,    -1,    -1,    -1,    -1,    48,    -1,
+      50,     4,     5,     6,     7,     8,     9,    10,    11,     4,
+       5,     6,     7,     8,     9,    10,    11,    -1,    -1,    22,
+      -1,    24,    -1,    -1,    -1,    -1,    21,    22,    23,     4,
+       5,     6,     7,     8,     9,    10,    11,    -1,    -1,     4,
+       5,     6,     7,     8,     9,    10,    11,    22,    23,     4,
+       5,     6,     7,     8,     9,    10,    11,    22,    13,    14,
+      -1,    -1,    -1,    18,    -1,    20,    -1,    22,     4,     5,
+       6,     7,     8,     9,    10,    11,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    19,    -1,    -1,    22,     4,     5,     6,
+       7,     8,     9,    10,    11,     4,     5,     6,     7,     8,
+       9,    10,    11,    12,    21,    22,    -1,    13,    14,    -1,
+      -1,    -1,    18,    22,    20,    -1,    22
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     0,    13,    14,    19,    21,    23,    27,    29,    30,
-      31,    33,    18,    19,    14,    33,    14,    32,    33,     0,
-      16,    17,    28,     4,     5,     6,     7,     8,     9,    10,
-      11,    23,    33,    32,    20,    32,    24,    22,    27,    33,
-      33,    33,    33,    33,    33,    33,    20,    32,    23,    33,
-      12,    24,    33,    25,    19,    33,    20
+       0,     0,    13,    14,    18,    20,    22,    26,    28,    29,
+      30,    32,    17,    18,    14,    32,    14,    31,    32,     0,
+      15,    16,    27,     4,     5,     6,     7,     8,     9,    10,
+      11,    22,    32,    31,    19,    31,    23,    21,    26,    32,
+      32,    32,    32,    32,    32,    32,    19,    31,    22,    32,
+      12,    23,    32,    24,    32
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    26,    27,    27,    27,    28,    28,    29,    30,    30,
-      30,    31,    31,    32,    32,    32,    33,    33,    33,    33,
-      33,    33,    33,    33,    33,    33,    33,    33,    33,    33
+       0,    25,    26,    26,    26,    27,    27,    28,    29,    29,
+      29,    30,    30,    31,    31,    31,    32,    32,    32,    32,
+      32,    32,    32,    32,    32,    32,    32,    32,    32,    32
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
@@ -667,7 +661,7 @@ static const yytype_int8 yyr2[] =
 {
        0,     2,     1,     3,     1,     1,     1,     1,     3,     1,
        0,     4,     3,     3,     1,     0,     1,     1,     1,     3,
-       3,     3,     3,     5,     3,     3,     2,     2,     4,     7
+       3,     3,     3,     5,     3,     3,     2,     2,     4,     5
 };
 
 
@@ -1131,208 +1125,208 @@ yyreduce:
   switch (yyn)
     {
   case 3: /* program: _statement sep program  */
-#line 35 "src/parser.bison"
+#line 39 "src/parser.bison"
                                  {}
-#line 1137 "src/parser.cpp"
+#line 1131 "src/parser.cpp"
     break;
 
   case 4: /* program: $end  */
-#line 36 "src/parser.bison"
+#line 40 "src/parser.bison"
                 { mipa::ProgramState::finished = true; }
-#line 1143 "src/parser.cpp"
+#line 1137 "src/parser.cpp"
     break;
 
   case 6: /* sep: '\n'  */
-#line 39 "src/parser.bison"
+#line 43 "src/parser.bison"
                  {prompt();}
-#line 1149 "src/parser.cpp"
+#line 1143 "src/parser.cpp"
     break;
 
   case 7: /* _statement: statement  */
-#line 41 "src/parser.bison"
+#line 45 "src/parser.bison"
                        { 
               if((yyvsp[0].innervalue) != nullptr && yyin == stdin) std::cout << (yyvsp[0].innervalue)->toString() << std::endl;
               mipa::ProgramState::gb_constants();
               (yyval.innervalue) = (yyvsp[0].innervalue);
             }
-#line 1159 "src/parser.cpp"
+#line 1153 "src/parser.cpp"
     break;
 
   case 8: /* statement: VARIABLE '=' value  */
-#line 47 "src/parser.bison"
+#line 51 "src/parser.bison"
                                {
                 mipa::ProgramState::set((yyvsp[-2].string), (yyvsp[0].innervalue));
                 (yyval.innervalue) = (yyvsp[0].innervalue);
               }
-#line 1168 "src/parser.cpp"
+#line 1162 "src/parser.cpp"
     break;
 
   case 9: /* statement: value  */
-#line 51 "src/parser.bison"
+#line 55 "src/parser.bison"
                   {(yyval.innervalue) = (yyvsp[0].innervalue);}
-#line 1174 "src/parser.cpp"
+#line 1168 "src/parser.cpp"
     break;
 
   case 10: /* statement: %empty  */
-#line 52 "src/parser.bison"
+#line 56 "src/parser.bison"
             {(yyval.innervalue) = nullptr;}
-#line 1180 "src/parser.cpp"
+#line 1174 "src/parser.cpp"
     break;
 
   case 11: /* function_call: VARIABLE '(' argstack ')'  */
-#line 55 "src/parser.bison"
+#line 59 "src/parser.bison"
                                           {
                     auto it = mipa::BuiltInFunctions.find((yyvsp[-3].string));
                     if(it == mipa::BuiltInFunctions.end()) throw std::runtime_error("Undefined function: "+std::string((yyvsp[-3].string)));
                     (yyval.innervalue) = it->second(*(yyvsp[-1].stack));
                     delete (yyvsp[-1].stack);
                   }
-#line 1191 "src/parser.cpp"
+#line 1185 "src/parser.cpp"
     break;
 
   case 12: /* function_call: '.' VARIABLE argstack  */
-#line 61 "src/parser.bison"
+#line 65 "src/parser.bison"
                                       { 
                             auto it = mipa::BuiltInFunctions.find((yyvsp[-1].string));
                             if(it == mipa::BuiltInFunctions.end()) throw std::runtime_error("Undefined function: "+std::string((yyvsp[-1].string)));
                             (yyval.innervalue) = it->second(*(yyvsp[0].stack));
                             delete (yyvsp[0].stack);
                           }
-#line 1202 "src/parser.cpp"
+#line 1196 "src/parser.cpp"
     break;
 
   case 13: /* argstack: value ',' argstack  */
-#line 70 "src/parser.bison"
+#line 74 "src/parser.bison"
                               {(yyval.stack) = (yyvsp[0].stack); (yyvsp[0].stack)->push((yyvsp[-2].innervalue)); }
-#line 1208 "src/parser.cpp"
+#line 1202 "src/parser.cpp"
     break;
 
   case 14: /* argstack: value  */
-#line 71 "src/parser.bison"
+#line 75 "src/parser.bison"
                 {(yyval.stack) = new std::stack<mipa::Value*>; (yyval.stack)->push((yyvsp[0].innervalue)); }
-#line 1214 "src/parser.cpp"
+#line 1208 "src/parser.cpp"
     break;
 
   case 15: /* argstack: %empty  */
-#line 72 "src/parser.bison"
+#line 76 "src/parser.bison"
           { (yyval.stack) = new std::stack<mipa::Value*>; }
-#line 1220 "src/parser.cpp"
+#line 1214 "src/parser.cpp"
     break;
 
   case 16: /* value: VARIABLE  */
-#line 75 "src/parser.bison"
+#line 79 "src/parser.bison"
                  { 
           (yyval.innervalue) = mipa::ProgramState::get((yyvsp[0].string));
         }
-#line 1228 "src/parser.cpp"
+#line 1222 "src/parser.cpp"
     break;
 
   case 17: /* value: VALUE  */
-#line 78 "src/parser.bison"
+#line 82 "src/parser.bison"
               { 
             (yyval.innervalue) = (yyvsp[0].innervalue); 
             mipa::ProgramState::setConstant((yyvsp[0].innervalue));
           }
-#line 1237 "src/parser.cpp"
+#line 1231 "src/parser.cpp"
     break;
 
   case 18: /* value: function_call  */
-#line 82 "src/parser.bison"
+#line 86 "src/parser.bison"
                       { (yyval.innervalue) = (yyvsp[0].innervalue); mipa::ProgramState::setConstant((yyvsp[0].innervalue)); }
-#line 1243 "src/parser.cpp"
+#line 1237 "src/parser.cpp"
     break;
 
   case 19: /* value: '[' argstack ']'  */
-#line 83 "src/parser.bison"
+#line 87 "src/parser.bison"
                          { (yyval.innervalue) = mipa::BuiltInFunctions.at("palette")(*(yyvsp[-1].stack)); delete (yyvsp[-1].stack); }
-#line 1249 "src/parser.cpp"
+#line 1243 "src/parser.cpp"
     break;
 
   case 20: /* value: '(' value ')'  */
-#line 84 "src/parser.bison"
+#line 88 "src/parser.bison"
                       { (yyval.innervalue) = (yyvsp[-1].innervalue); }
-#line 1255 "src/parser.cpp"
+#line 1249 "src/parser.cpp"
     break;
 
   case 21: /* value: value SHIFTR value  */
-#line 85 "src/parser.bison"
+#line 89 "src/parser.bison"
                            {
             std::stack<mipa::Value*> argstack; argstack.push((yyvsp[-2].innervalue)); argstack.push((yyvsp[0].innervalue));
             (yyval.innervalue) = mipa::BuiltInFunctions.at("shiftHueRightOperator")(argstack); 
           }
-#line 1264 "src/parser.cpp"
+#line 1258 "src/parser.cpp"
     break;
 
   case 22: /* value: value SHIFTL value  */
-#line 89 "src/parser.bison"
+#line 93 "src/parser.bison"
                            { 
             std::stack<mipa::Value*> argstack; argstack.push((yyvsp[-2].innervalue)); argstack.push((yyvsp[0].innervalue));
             (yyval.innervalue) = mipa::BuiltInFunctions.at("shiftHueLeftOperator")(argstack); 
           }
-#line 1273 "src/parser.cpp"
+#line 1267 "src/parser.cpp"
     break;
 
   case 23: /* value: value LERP value value '%'  */
-#line 93 "src/parser.bison"
+#line 97 "src/parser.bison"
                                    { 
             std::stack<mipa::Value*> argstack; argstack.push((yyvsp[-4].innervalue)); 
             argstack.push((yyvsp[-2].innervalue)); argstack.push((yyvsp[-1].innervalue));
             (yyval.innervalue) = mipa::BuiltInFunctions.at("lerpOperator")(argstack); 
           }
-#line 1283 "src/parser.cpp"
+#line 1277 "src/parser.cpp"
     break;
 
   case 24: /* value: value LIGHTEN value  */
-#line 98 "src/parser.bison"
+#line 102 "src/parser.bison"
                             { 
             std::stack<mipa::Value*> argstack; argstack.push((yyvsp[-2].innervalue)); argstack.push((yyvsp[0].innervalue));
             (yyval.innervalue) = mipa::BuiltInFunctions.at("lightenOperator")(argstack); }
-#line 1291 "src/parser.cpp"
+#line 1285 "src/parser.cpp"
     break;
 
   case 25: /* value: value DARKEN value  */
-#line 101 "src/parser.bison"
+#line 105 "src/parser.bison"
                            { 
             std::stack<mipa::Value*> argstack; argstack.push((yyvsp[-2].innervalue)); argstack.push((yyvsp[0].innervalue));
             (yyval.innervalue) = mipa::BuiltInFunctions.at("darkenOperator")(argstack); }
-#line 1299 "src/parser.cpp"
+#line 1293 "src/parser.cpp"
     break;
 
   case 26: /* value: value SATURATE  */
-#line 104 "src/parser.bison"
+#line 108 "src/parser.bison"
                        { 
             std::stack<mipa::Value*> argstack; argstack.push((yyvsp[-1].innervalue));
             (yyval.innervalue) = mipa::BuiltInFunctions.at("saturateOperator")(argstack); }
-#line 1307 "src/parser.cpp"
+#line 1301 "src/parser.cpp"
     break;
 
   case 27: /* value: value DESATURATE  */
-#line 107 "src/parser.bison"
+#line 111 "src/parser.bison"
                          { 
             std::stack<mipa::Value*> argstack; argstack.push((yyvsp[-1].innervalue));
             (yyval.innervalue) = mipa::BuiltInFunctions.at("desaturateOperator")(argstack); }
-#line 1315 "src/parser.cpp"
+#line 1309 "src/parser.cpp"
     break;
 
   case 28: /* value: value '[' value ']'  */
-#line 110 "src/parser.bison"
+#line 114 "src/parser.bison"
                             { 
             std::stack<mipa::Value*> argstack; argstack.push((yyvsp[-3].innervalue)); argstack.push((yyvsp[-1].innervalue));
             (yyval.innervalue) = mipa::BuiltInFunctions.at("accessPaletteOperator")(argstack); }
-#line 1323 "src/parser.cpp"
+#line 1317 "src/parser.cpp"
     break;
 
-  case 29: /* value: value GROP1 value GROP2 '(' value ')'  */
-#line 113 "src/parser.bison"
-                                              { 
-            std::stack<mipa::Value*> argstack; argstack.push((yyvsp[-6].innervalue));
-            argstack.push((yyvsp[-4].innervalue)); argstack.push((yyvsp[-1].innervalue));
+  case 29: /* value: value GROP1 value GROP2 value  */
+#line 117 "src/parser.bison"
+                                      { 
+            std::stack<mipa::Value*> argstack; argstack.push((yyvsp[-4].innervalue));
+            argstack.push((yyvsp[-2].innervalue)); argstack.push((yyvsp[0].innervalue));
             (yyval.innervalue) = mipa::BuiltInFunctions.at("gradientOperator")(argstack); }
-#line 1332 "src/parser.cpp"
+#line 1326 "src/parser.cpp"
     break;
 
 
-#line 1336 "src/parser.cpp"
+#line 1330 "src/parser.cpp"
 
       default: break;
     }
@@ -1525,7 +1519,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 119 "src/parser.bison"
+#line 123 "src/parser.bison"
 
 void yyerror(const char* msg){
     throw std::runtime_error("parser: "+std::string(msg));

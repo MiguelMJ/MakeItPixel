@@ -324,6 +324,78 @@ namespace mipa{
         ProgramState::maybeRefresh(img);
         return img;
     }
+
+    Value* pixelize(argstack& args){
+        assert_arity(args, 3);
+        assert_type(*args.top(), IMAGE);
+        ImageValue* imgval = (ImageValue*)args.top();
+        args.pop();
+        assert_type(*args.top(), NUMBER);
+        sf::Vector2u origImgSize = imgval->image.getSize();
+        float ratio = (float)origImgSize.y/origImgSize.x;
+        uint width, height;
+        if(origImgSize.x > origImgSize.y){
+            width = ((NumberValue*)args.top())->number;
+            height = width * ratio;
+        }else{
+            height = ((NumberValue*)args.top())->number;
+            width = height / ratio;
+        }
+        args.pop();
+        assert_type(*args.top(), STRING);
+        std::string selector = ((StringValue*)args.top())->string;
+        RGB (*selectorfun)(const Palette&);        
+        if(selector == "avg"){
+            selectorfun = [](const Palette& p)->RGB{
+                uint sr=0, sg=0, sb=0, sa=0;
+                for(auto& c: p){
+                    sr += c.r;
+                    sg += c.g;
+                    sb += c.b;
+                    sa += c.a;
+                }
+                uint n = p.size();
+                return RGB(sr/n, sg/n, sb/n, sa/n);
+            };
+        }else if(selector == "med"){
+            selectorfun = [](const Palette& p)->RGB{
+                return graySorted(p)[p.size()/2];
+            };
+        }else if(selector == "min"){
+            selectorfun = [](const Palette& p)->RGB{
+                return graySorted(p)[0];
+            };
+        }else if(selector == "max"){
+            selectorfun = [](const Palette& p)->RGB{
+                return graySorted(p)[p.size()-1];
+            };
+        }else{
+            throw std::runtime_error("Unkown pixel selector: "+selector);
+        }
+
+        uint blockwidth = origImgSize.x / width;
+        uint blockheight = origImgSize.y / height;
+        sf::Image old = imgval->image;
+        imgval->image.create(width, height);
+        for(uint j = 0; j <= height; j++){
+            for(uint i = 0; i <= width; i++){
+                std::vector<RGB> block;
+                for(uint bj = 0; bj < blockheight; bj++){
+                    for(uint bi = 0; bi < blockwidth; bi++){
+                        uint x = i * blockwidth + bi;
+                        uint y = j * blockheight + bj;
+                        if(x < origImgSize.x && y < origImgSize.y){
+                            block.push_back(imgval->image.getPixel(x,y));
+                        }
+                    }
+                }
+                if(!block.empty()){
+                    imgval->image.setPixel(i,j,selectorfun(block));
+                }
+            }
+        }
+        return imgval;
+    }
     
     Value* shiftHueRightOperator(argstack& args){
         assert_type(*args.top(), NUMBER);
@@ -534,6 +606,7 @@ namespace mipa{
         {"dither_fs", dither_fs},
         {"dither_ord", dither_ord},
         {"quantize", quantize},
+        {"pixelize", pixelize},
         {"stack", stack},
         {"push", push},
         {"pop", pop},

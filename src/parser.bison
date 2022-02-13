@@ -27,7 +27,11 @@
 %type <stack> argstack
 %type <innervalue> statement _statement function_call value
 
-%left SHIFTr SHIFTL LERP SATURATE DESATURATE LIGHTEN DARKEN GROP1 GROP2
+%left LIGHTEN DARKEN
+%left SATURATE DESATURATE
+%left SHIFTR SHIFTL
+%left LERP
+%left GROP1 GROP2
 
 %%
 
@@ -110,9 +114,9 @@ value : VARIABLE {
       | value '[' value ']' { 
             std::stack<mipa::Value*> argstack; argstack.push($1); argstack.push($3);
             $$ = mipa::BuiltInFunctions.at("accessPaletteOperator")(argstack); }
-      | value GROP1 value GROP2 '(' value ')' { 
+      | value GROP1 value GROP2 value { 
             std::stack<mipa::Value*> argstack; argstack.push($1);
-            argstack.push($3); argstack.push($6);
+            argstack.push($3); argstack.push($5);
             $$ = mipa::BuiltInFunctions.at("gradientOperator")(argstack); }
       ;
 

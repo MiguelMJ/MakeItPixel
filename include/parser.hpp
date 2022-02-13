@@ -81,8 +81,7 @@ extern int yydebug;
     GROP1 = 266,                   /* GROP1  */
     GROP2 = 267,                   /* GROP2  */
     VALUE = 268,                   /* VALUE  */
-    VARIABLE = 269,                /* VARIABLE  */
-    SHIFTr = 270                   /* SHIFTr  */
+    VARIABLE = 269                 /* VARIABLE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -97,7 +96,7 @@ union YYSTYPE
     mipa::Value *innervalue;
     std::stack<mipa::Value*> *stack;
 
-#line 101 "include/parser.hpp"
+#line 100 "include/parser.hpp"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -117,6 +116,6 @@ int yyparse (void);
   extern void set_input_string(const char* in);
   extern void end_lexical_scan(void);
 
-#line 121 "include/parser.hpp"
+#line 120 "include/parser.hpp"
 
 #endif /* !YY_YY_INCLUDE_PARSER_HPP_INCLUDED  */
