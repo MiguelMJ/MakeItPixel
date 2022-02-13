@@ -80,7 +80,7 @@ src/lexer.cpp: src/lexer.flex
 #
 debug: $(DBGEXEC)
 
-$(DBGEXEC): $(DBGOBJ) intpreter
+$(DBGEXEC): $(DBGOBJ)
 	$(call print_info,Building $@)
 	@$(CXX) $(CXXFLAGS) $(DBGCFLAGS) $^ -o $(DBGEXEC) $(LINKAGE)
 	$(call print_success,$< ready)
