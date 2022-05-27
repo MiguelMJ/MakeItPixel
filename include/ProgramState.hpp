@@ -22,7 +22,7 @@ namespace mipa{
         extern bool finished;
         void setConstant(Value* val);
         Value* get(const std::string var);
-        void set(const std::string var, Value* val);
+        void set(const std::string var, Value* val, bool inner=false);
         void unset(const std::string var);
         void maybeRefresh(ImageValue* val);
         void gb_constants();

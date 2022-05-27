@@ -99,23 +99,25 @@ struct window{
         auto imgSize = img.getSize();
         texture.create(imgSize.x, imgSize.y);
         texture.update(img);
-        rwindow.create(sf::VideoMode(imgSize.x,imgSize.y), std::string("Make It Pixel"), sf::Style::None);
+        float scale = ((NumberValue*)ProgramState::get("_scale"))->number;
+        rwindow.create(sf::VideoMode(scale * imgSize.x, scale * imgSize.y), std::string("Make It Pixel"), sf::Style::Titlebar);
         adjustView(imgSize);
         rwindow.setFramerateLimit(30);
         mutex.unlock();
     }
     void refresh(const sf::Image& img){
-        std::cout << "..." << std::endl;
+        std::cout << "...";
         mutex.lock();
-        std::cout << "refreshing" << std::endl;
+        std::cout << "\u001b[2K\rrefreshing";
         auto imgSize = img.getSize();
         if(imgSize.x > texture.getSize().x || imgSize.y > texture.getSize().y){
             texture.create(imgSize.x, imgSize.y);
         }
         texture.update(img);
-        rwindow.setSize(imgSize);
+        float scale = ((NumberValue*)ProgramState::get("_scale"))->number;
+        rwindow.setSize(sf::Vector2u(imgSize.x * scale, imgSize.y * scale));
         adjustView(imgSize);
-        std::cout << "done" << std::endl;
+        std::cout << "\u001b[2K\r";
         mutex.unlock();
     }
     void process(){
@@ -256,6 +258,7 @@ int main(int argc, char** argv){
         }
     }
     interactive = params.empty() && ! eval;
+    mipa::ProgramState::set("_scale", new NumberValue(1.0f), true);
     if(interactive){
         return interactive_mode(quiet);
     }
@@ -275,7 +278,7 @@ int main(int argc, char** argv){
         }
     }
     for(uint i = 0; i < params.size(); i++){
-        mipa::ProgramState::set("_"+std::to_string(i), new mipa::StringValue(params[i]));
+        mipa::ProgramState::set("_"+std::to_string(i), new mipa::StringValue(params[i]), true);
     }
     FILE *infile = fopen(params[0].c_str(), "r");
     if(!infile){

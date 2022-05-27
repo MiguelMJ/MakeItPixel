@@ -185,17 +185,9 @@ namespace mipa{
     }
 
     Value* undo(argstack& args){
-        while(!args.empty()){
-            Value* arg = args.top();
-            args.pop();
-            assert_type(*arg, STRING);
-            std::string varname = ((StringValue*)arg)->string;
-            auto it = ProgramState::symbolStack.find(varname);
-            if(it == ProgramState::symbolStack.end() || it->second.empty()){
-                throw std::runtime_error(varname+" has no stacked value");
-            }
-            ProgramState::set(varname, it->second.top());
-        }
+        argstack args2(args);        
+        pop(args);
+        push(args2);
         return nullptr;
     }
 
@@ -354,7 +346,9 @@ namespace mipa{
     }
 
     Value* pixelize(argstack& args){
-        assert_arity(args, 3);
+        if(args.size() > 3){
+            throw std::runtime_error("Incorrect number of arguments: expected 2 or 3, got: "+std::to_string(args.size()));
+        }
         assert_type(*args.top(), IMAGE);
         ImageValue* imgval = (ImageValue*)args.top();
         args.pop();
@@ -370,8 +364,11 @@ namespace mipa{
             width = height / ratio;
         }
         args.pop();
-        assert_type(*args.top(), STRING);
-        std::string selector = ((StringValue*)args.top())->string;
+        std::string selector = "avg";
+        if(!args.empty()){
+            assert_type(*args.top(), STRING);
+            selector = ((StringValue*)args.top())->string;
+        }
         RGB (*selectorfun)(const Palette&);        
         if(selector == "avg"){
             selectorfun = [](const Palette& p)->RGB{
@@ -403,7 +400,9 @@ namespace mipa{
 
         uint blockwidth = origImgSize.x / width;
         uint blockheight = origImgSize.y / height;
-        sf::Image old = imgval->image;
+        sf::Image old; 
+        old.create(origImgSize.x, origImgSize.y, imgval->image.getPixelsPtr());
+        // old.copy(imgval->image, 0, 0);
         imgval->image.create(width, height);
         for(uint j = 0; j <= height; j++){
             for(uint i = 0; i <= width; i++){
@@ -413,7 +412,7 @@ namespace mipa{
                         uint x = i * blockwidth + bi;
                         uint y = j * blockheight + bj;
                         if(x < origImgSize.x && y < origImgSize.y){
-                            block.push_back(imgval->image.getPixel(x,y));
+                            block.push_back(old.getPixel(x,y));
                         }
                     }
                 }
@@ -422,6 +421,7 @@ namespace mipa{
                 }
             }
         }
+        ProgramState::maybeRefresh(imgval);
         return imgval;
     }
     

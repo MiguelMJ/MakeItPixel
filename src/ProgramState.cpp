@@ -14,6 +14,7 @@ namespace mipa{
         sf::Image* for_display = nullptr;   
 
         void countPointer(Value* val){
+            std::cout << "COUNT " << val << std::endl;
             auto it = pointerCounter.find(val);
             if(it != pointerCounter.end()){
                 it->second++;
@@ -23,6 +24,7 @@ namespace mipa{
         }
 
         void uncountPointer(Value* val){
+            std::cout << "UNCOUNT " << val << std::endl;
             pointerCounter[val]--;
             if(pointerCounter[val] == 0){
                 pointerCounter.erase(val);
@@ -33,7 +35,7 @@ namespace mipa{
             countPointer(val);
             constants.push(val);
         }
-        void set(const std::string var, Value* val){
+        void set(const std::string var, Value* val, bool inner){
             auto it = symbolTable.find(var);
             if(it != symbolTable.end() && it->second->type == IMAGE){
                 auto imgVal = (ImageValue*)it->second;
@@ -44,10 +46,19 @@ namespace mipa{
                     for_display = &((ImageValue*)val)->image;
                     should_refresh = true;
                 }
+            }else if(!inner && var[0] == '_'){
+                if(it == symbolTable.end()){
+                    throw std::runtime_error(var+" is not an existent configuration variable");
+                }else if(it->second->type != val->type){
+                    throw std::runtime_error("Configuration variables must keep their type: "+var);
+                }
             }
             countPointer(val);
             unset(var);
             symbolTable[var]=val;
+            if(var == "_scale" && for_display != nullptr){
+                should_refresh = true;
+            }
         }
         Value* get(const std::string var){
             auto it = symbolTable.find(var);
@@ -74,7 +85,7 @@ namespace mipa{
         }
         void gb(){
             for(auto& v: garbage){
-                delete v;
+                delete v; 
             }
             garbage.clear();
         }
