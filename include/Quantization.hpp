@@ -58,7 +58,7 @@ namespace mipa{
     extern const std::map<std::string, Matrix> matrices;
 
     template <typename F>
-    void ditherOrdered(sf::Image& image, F quant, const Matrix& m, float sparsity, float threshold=0){
+    void ditherOrdered(sf::Image& image, F quant, const Matrix& m, float sparsity, float threshold = 0){
         int N = m.getHeight() * m.getWidth();
         sf::Vector2u imgSize = image.getSize();
         for(uint y = 0; y < imgSize.y; y++){
