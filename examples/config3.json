@@ -10,7 +10,7 @@
         "sparsity": "auto"
     },
     "palette": {
-        "main": "1820a0",
+        "main": "#1820a0",
         "scheme": "rectangle",
         "spectre": "complete",
         "inter": 2,
