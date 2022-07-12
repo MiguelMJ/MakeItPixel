@@ -250,7 +250,7 @@ int main(int argc, char** argv){
                 {"main", "00ff00"}, // <color>
                 {"scheme", "analogous"}, // mono, analogous, complementary, triadic, split_complementary, rectangle, square 
                 {"spectre", "linear"}, // complete, linear 
-                {"inter", 3}, // <number>
+                {"inter", 0}, // <number>
                 {"disparity", 0.85} // <number>
             } // object or <color> array
         }
@@ -281,7 +281,12 @@ int main(int argc, char** argv){
     // PALETTE BUILDING
     Palette base_colors;
     Palette palette = {};
-    auto str2rgb = [](const std::string& str)->RGB{return RGB((std::stoi(str, nullptr, 16) << 8) | 0xff);};
+    auto str2rgb = [](std::string str)->RGB{
+        if(str.length() > 0 && str[0] == '#'){
+            str = str.substr(1);
+        }
+        return RGB((std::stoi(str, nullptr, 16) << 8) | 0xff);
+    };
     if(config["palette"].is_array()){
         for(auto& col: config["palette"]){
             palette.push_back(str2rgb(col.get<std::string>()));
@@ -346,7 +351,7 @@ int main(int argc, char** argv){
     for(auto& c: palette){
         std::stringstream ss;
         ss << c;
-        log(PLAIN, ss.str());
+        log(PLAIN, "#" + ss.str());
     }
 
     // BUILD COLOR SELECTION STRATEGY
