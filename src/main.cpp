@@ -151,16 +151,33 @@ void normalize(sf::Image& image){
     }
 }
 
+void print_help(){
+    std::cout << "Usage: makeitpixel [-h] [-c FILE] [-x JSON] [-o DIR] FILES..." << std::endl;
+    std::cout << "" << std::endl;
+    std::cout << "Program to make images look like pixel art." << std::endl;
+    std::cout << "" << std::endl;
+    std::cout << "OPTIONS" << std::endl;
+    std::cout << "  -h, --help              Print this help message and exit." << std::endl;
+    std::cout << "  -x, --config CONFIG     Set the CLI configuration as a JSON formatted string." << std::endl;
+    std::cout << "  -c, --config-file PATH  Set the configuration file." << std::endl;
+    std::cout << "  -o, --output-dir DIR    Set the output directory for the generated images." << std::endl;
+    exit(0);
+}
+
 /*
  * MAIN
  */
 
 int main(int argc, char** argv){
+    if(argc == 1){
+        print_help();
+    }
     // PARSE ARGUMENTS INTO PARAMETERS
     const std::map<std::string, std::string> args_shorts = {
         {"-c", "--config-file"},
         {"-x", "--config"},
-        {"-o", "--output-dir"}
+        {"-o", "--output-dir"},
+        {"-h", "--help"}
     };
     std::map<std::string, bool> flags = {
     };
@@ -171,9 +188,11 @@ int main(int argc, char** argv){
     };
     std::vector<std::string> positional;
     std::string last_opt;
+    std::string last_real_opt;
     bool expect_positional = true;
     for(int i=1; i < argc; i++){
         std::string arg(argv[i]);
+        last_real_opt = arg;
         auto it = args_shorts.find(arg);
         if(it != args_shorts.end()) arg = it->second;
         if(flags.find(arg) != flags.end()){
@@ -185,6 +204,9 @@ int main(int argc, char** argv){
             expect_positional = false;
             continue;
         }
+        if(arg == "--help"){
+            print_help();
+        }
         if(arg[0] == '-'){
             log(ERROR, "Unknown option: "+arg);
             continue;
@@ -195,6 +217,15 @@ int main(int argc, char** argv){
             opts[last_opt] = arg;
             expect_positional = true;
         }
+    }
+    // SOME ERROR HANDLING 
+    if(!expect_positional){
+        log(ERROR, last_real_opt + " expected an option value");
+        return -1;
+    }
+    if(positional.size() == 0){
+        log(ERROR, "No files provided");
+        return -1;
     }
     // A BIT OF POSTPROCESSING THE ARGS
     opts["--output-dir"] += sep;
