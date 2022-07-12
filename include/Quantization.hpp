@@ -9,21 +9,21 @@
 
 namespace mipa{
     template <typename F>
-    void directQuantize(sf::Image& image, F quant){
+    void directQuantize(sf::Image& image, const F& quant){
         sf::Vector2u imgSize = image.getSize();        
         for(uint y = 0; y < imgSize.y; y++){
             for(uint x = 0; x < imgSize.x; x++){
-                image.setPixel(x, y, (*quant)(image.getPixel(x, y)));
+                image.setPixel(x, y, quant(image.getPixel(x, y)));
             }
         }
     }
     template <typename F>
-    void ditherFloydSteinberg(sf::Image& image, F quant, float threshold = 0){
+    void ditherFloydSteinberg(sf::Image& image, const F& quant, float threshold = 0){
         sf::Vector2u imgSize = image.getSize();        
         for(uint y = 0; y < imgSize.y; y++){
             for(uint x = 0; x < imgSize.x; x++){
                 RGB oldColor = image.getPixel(x,y);
-                RGB newColor = (*quant)(oldColor);
+                RGB newColor = quant(oldColor);
                 image.setPixel(x,y,newColor); 
                 float err = rgbSquaredDistance(oldColor, newColor);
                 if (err > threshold * threshold){
@@ -58,24 +58,26 @@ namespace mipa{
     extern const std::map<std::string, Matrix> matrices;
 
     template <typename F>
-    void ditherOrdered(sf::Image& image, F quant, const Matrix& m, float sparsity, float threshold = 0){
-        int N = m.getHeight() * m.getWidth();
+    void ditherOrdered(sf::Image& image, const F& quant, const Matrix& m, double sparsity, float threshold = 0){
+        double N = m.getHeight() * m.getWidth();
         sf::Vector2u imgSize = image.getSize();
         for(uint y = 0; y < imgSize.y; y++){
             for(uint x = 0; x < imgSize.x; x++){
                 RGB oldColor = image.getPixel(x,y);
-                float mij = m.get(y % m.getHeight(), x % m.getWidth()) / N - 0.5f;
+                double mij = m.get(y % m.getHeight(), x % m.getWidth()) / N - 0.5;
                 auto clamp = [](int x)->int{return std::min(255,std::max(0,x));};
-                int interR = clamp((int)oldColor.r + (255.f/sparsity) * mij);
-                int interG = clamp((int)oldColor.g + (255.f/sparsity) * mij);
-                int interB = clamp((int)oldColor.b + (255.f/sparsity) * mij);
-                RGB newColor = (*quant)(RGB(interR, interG, interB));
-                oldColor = (*quant)(oldColor);
+                RGB interColor;
+                interColor.r = clamp((double)oldColor.r + sparsity * mij);
+                interColor.g = clamp((double)oldColor.g + sparsity * mij);
+                interColor.b = clamp((double)oldColor.b + sparsity * mij);
+                RGB newColor = quant(interColor);
+                newColor.a = oldColor.a;
+                RGB quantOldColor = quant(oldColor);
                 float err = rgbDistance(oldColor, newColor);
                 if(err > threshold * threshold){
                     image.setPixel(x,y, newColor);
                 }else{
-                    image.setPixel(x,y, oldColor);
+                    image.setPixel(x,y, quantOldColor);
                 }
 
             }

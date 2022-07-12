@@ -1,10 +1,11 @@
-#include <map>
 #include <cmath>
-#include <regex>
-#include <vector>
-#include <string>
-#include <iostream>
 #include <fstream>
+#include <functional>
+#include <iostream>
+#include <map>
+#include <regex>
+#include <string>
+#include <vector>
 
 #include <SFML/Graphics.hpp>
 
@@ -163,7 +164,7 @@ int main(int argc, char** argv){
     };
     std::map<std::string, std::string> opts = {
         {"--config", "{}"},
-        {"--config-file", "config.json"},
+        {"--config-file", ""},
         {"--output-dir", "."}
     };
     std::vector<std::string> positional;
@@ -198,34 +199,39 @@ int main(int argc, char** argv){
 
     // DEFAULT CONFIGURATION
     json config = {
-        {"normalize", "no"},
-        {"width", 64},
-        {"height", 64},
+        {"normalize", "no"}, // no, pre, post
+        {"select_pixel", "avg"}, // avg, med, min, max
+        {"width", 64}, // <number>
+        {"height", 64}, // <number>
+        {"quantization", "none"}, // none, bit<number>, closest_rgb, closest_gray
         {"dithering", 
             {
-                {"method", "none"},
-                {"threshold", 0}
+                {"method", "none"}, // none, floydsteinberg, ordered
+                {"matrix", "Bayes4"}, // see Quantization.cpp::matrices
+                {"threshold", 0}, // <number>
+                {"sparsity", "auto"} // auto, <number>
             }
-        },
-        {"quantizer", "direct"}
+        }
     };
     // FILE CONFIGURATION
     json file_config;
-    try{
-        std::ifstream config_file(opts["--config-file"]);
-        config_file >> file_config;
-        config_file.close();
-    }catch(const std::exception& ex){
-        log(ERROR, ex.what());
-        return -1;
+    if(opts["--config-file"].size() > 0){
+        try{
+            std::ifstream config_file(opts["--config-file"]);
+            config_file >> file_config;
+            config_file.close();
+        }catch(const std::exception& ex){
+            log(ERROR, ex.what());
+            return -1;
+        }
+        config.merge_patch(file_config);
     }
 
     // CLI CONFIGURATION
     json cli_config = json::parse(opts["--config"]);
-    
-    // FINAL CONFIGURATION
-    config.merge_patch(file_config);
-    config.merge_patch(cli_config);
+    if(cli_config.size() > 0){
+        config.merge_patch(cli_config);
+    }
     
     log(IMPORTANT, "Configuration");
     log(PLAIN, config.dump(2));
@@ -244,14 +250,18 @@ int main(int argc, char** argv){
             log(ERROR, "Couldn't load "+file);
             continue;
         }
+        
         // PROCESS IMAGE
+        
+        //// Normalization
         if(config["normalize"] == "pre"){
             normalize(img);
         }else if(config["normalize"] != "pos" && config["normalize"] != "no"){
-            log(ERROR, "Bad normalize option: " + config["normalize"].get<std::string>());
-            continue;
+            log(ERROR, "Bad normalize option: " + config["normalize"].dump());
+            return -1;
         }
 
+        //// Scaling
         pixelize(
             out, 
             img, 
@@ -259,10 +269,71 @@ int main(int argc, char** argv){
             config["height"].get<uint>(), 
             config["select_pixel"].get<std::string>()
         );
-        
-        std::string dithering_method = config["dithering"]["method"].get<std::string>();
-        
+        // Quantization strategy
+        // none, bit<number>, closest_rgb, closest_gray
+        double sparsity = 0;
+        std::function<RGB(const RGB&)> quantizer = [&](const RGB& rgb) -> RGB { return rgb; };
+        if(config["quantization"].is_string() && config["quantization"].get<std::string>().substr(0, 3) == "bit"){
+            int bit_num = std::stoi(config["quantization"].get<std::string>().substr(3));
+            int values_per_channel = std::pow(2, bit_num);
+            double factor = 255.0 / (values_per_channel-1);
+            const auto qchannel = [factor](int x) -> int { 
+                double r =  factor * std::round((double)x / factor); 
+                return r;
+            };
+            quantizer = [qchannel](const RGB &rgb) -> RGB {
+                RGB ret(
+                    qchannel(rgb.r),
+                    qchannel(rgb.g),
+                    qchannel(rgb.b),
+                    rgb.a
+                );
+                return ret;
+            };
+            sparsity = factor;
+        }else if(config["quantization"] != "none"){
+                log(ERROR, "Bad quantization option: " + config["quantization"].dump());
+                return -1;
+        }
 
+        // Quantization and dithering
+        if(config["dithering"]["method"] == "floydsteinberg"){
+
+            ditherFloydSteinberg(out, quantizer);
+
+        }else if(config["dithering"]["method"] == "ordered"){
+
+            auto matrix_it = matrices.find(config["dithering"]["matrix"]);
+            
+            if(matrix_it == matrices.end()){
+                log(ERROR, "Bad matrix option: " + config["dithering"]["matrix"].dump());
+                return -1;
+            }
+            
+            if(config["dithering"]["sparsity"].is_number()){
+                sparsity = config["dithering"]["sparsity"].get<float>();
+            
+            }else if(config["dithering"]["sparsity"] == "auto"){
+                log(INFO, "Auto sparsity: " + std::to_string(sparsity));
+            
+            }else{
+                log(ERROR, "Bad sparsity option: " + config["dithering"]["sparsity"].dump());
+                return -1;
+            }
+            ditherOrdered(out, quantizer, matrix_it->second, sparsity);
+            
+        }else if(config["dithering"]["method"] == "none"){
+
+            directQuantize(out, quantizer);
+        
+        }else{
+        
+            log(ERROR, "Bad dithering method option: " + config["dithering"]["method"].dump());
+            return -1;
+        
+        }
+
+        //// Normalization
         if(config["normalize"] == "pos"){
             normalize(out);
         }

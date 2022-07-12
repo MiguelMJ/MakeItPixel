@@ -1,5 +1,6 @@
 #include "Color.hpp"
 
+#include <iomanip>
 #include <cmath>
 
 namespace mipa{
@@ -156,7 +157,7 @@ namespace mipa{
     }
 
     std::ostream& operator << (std::ostream& out, const RGB& color){
-        out << std::hex << (color.toInteger() >> 8) << std::dec;
+        out << std::setfill('0') << std::setw(6) << std::hex << (color.toInteger() >> 8) << std::dec;
         return out;
     }
 }
