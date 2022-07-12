@@ -1,0 +1,13 @@
+{
+    "normalize": "pre",
+    "select_pixel": "avg",
+    "height": 64,
+    "width": 64,
+    "quantization": "closest_gray",
+    "dithering": {
+        "method": "floydsteinberg",
+        "matrix": "Bayes2",
+        "sparsity": "auto"
+    },
+    "palette": ["0f0f0f" ,"f0f0f0"]
+}

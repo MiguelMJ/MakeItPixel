@@ -1,0 +1,11 @@
+{
+    "normalize": "no",
+    "select_pixel": "med",
+    "height": 64,
+    "width": 64,
+    "quantization": "bit2",
+    "dithering": {
+        "method": "ordered",
+        "matrix": "Bayes2"
+    }
+}

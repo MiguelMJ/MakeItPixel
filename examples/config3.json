@@ -1,0 +1,19 @@
+{
+    "normalize": "no",
+    "select_pixel": "avg",
+    "height": 64,
+    "width": 64,
+    "quantization": "closest_gray",
+    "dithering": {
+        "method": "ordered",
+        "matrix": "Bayes8",
+        "sparsity": "auto"
+    },
+    "palette": {
+        "main": "1820a0",
+        "scheme": "rectangle",
+        "spectre": "complete",
+        "inter": 2,
+        "disparity": 0.2
+    }
+}
