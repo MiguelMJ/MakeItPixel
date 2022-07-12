@@ -211,6 +211,14 @@ int main(int argc, char** argv){
                 {"threshold", 0}, // <number>
                 {"sparsity", "auto"} // auto, <number>
             }
+        },
+        {"palette", 
+            {
+                {"main", "00ff00"}, // <color>
+                {"scheme", "00ff00"}, // mono, analogous, complementary, triadic, split_complementary, complementary_spectre, rectangle, square 
+                {"spectre_size", 3}, // <number>
+                {"complete", false} // <number>
+            } // object or <color> array
         }
     };
     // FILE CONFIGURATION
@@ -235,6 +243,17 @@ int main(int argc, char** argv){
     
     log(IMPORTANT, "Configuration");
     log(PLAIN, config.dump(2));
+
+    // PALETTE BUILDING
+    Palette palette;
+    auto str2rgb = [](const std::string& str)->RGB{return RGB((std::stoi(str, nullptr, 16) << 8) | 0xff);};
+    if(config["palette"].is_array()){
+        for(auto& col: config["palette"]){
+            palette.push_back(str2rgb(col.get<std::string>()));
+        }
+    }else{
+        palette = {str2rgb(config["palette"]["main"].get<std::string>())};
+    }
 
     // START FILE PROCESSING
     std::regex parent_dir_re (".*/");
@@ -282,15 +301,24 @@ int main(int argc, char** argv){
                 return r;
             };
             quantizer = [qchannel](const RGB &rgb) -> RGB {
-                RGB ret(
+                return RGB(
                     qchannel(rgb.r),
                     qchannel(rgb.g),
                     qchannel(rgb.b),
                     rgb.a
                 );
-                return ret;
             };
             sparsity = factor;
+        }else if(config["quantization"] == "closest_rgb"){
+                quantizer = [palette](const RGB &rgb) -> RGB {
+                    return closestByColor(palette, rgb)[0];
+                };
+                sparsity = 255.0 / palette.size();
+        }else if(config["quantization"] == "closest_gray"){
+                quantizer = [palette](const RGB &rgb) -> RGB {
+                    return closestByBrightness(palette, rgb)[0];
+                };
+                sparsity = 255.0 / palette.size();
         }else if(config["quantization"] != "none"){
                 log(ERROR, "Bad quantization option: " + config["quantization"].dump());
                 return -1;
