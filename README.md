@@ -22,10 +22,11 @@ Here's an example of different results processing an image with different config
 <p align="center">
 <img width="49%" src="examples/monalisa.png">
 </p>
-<img width="49%" src="examples/config1.png">
-<img width="49%" src="examples/config2.png">
-<img width="49%" src="examples/config3.png">
-<img width="49%" src="examples/config4.png">
+
+|  | |
+|---|---|
+| <img src="examples/config1.png"> | <img src="examples/config2.png"> |
+| <img src="examples/config3.png"> | <img src="examples/config4.png"> |
 
 ## Features
 
