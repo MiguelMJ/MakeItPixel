@@ -22,10 +22,11 @@ Make It Pixel is a programming language to process images to look like pixel art
 
 ## Preview
 
-Here's an example of different results processing an image with different configurations
-<p align="center">
+Original: 
 
 <img src="examples/monalisa.png">
+
+Example results:
 
 |||
 |-|-|
