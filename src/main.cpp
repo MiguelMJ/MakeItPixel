@@ -305,7 +305,7 @@ int main(int argc, char** argv){
         }
     }
     
-    // https://stackoverflow.com/questions/16476099/remove-duplicate-entries-in-a-c-vector#16476268
+    //// https://stackoverflow.com/questions/16476099/remove-duplicate-entries-in-a-c-vector#16476268
     palette = closestByBrightness(palette, RGB(0));
     auto last = std::unique(palette.begin(), palette.end());
     palette.erase(last, palette.end());
@@ -314,7 +314,60 @@ int main(int argc, char** argv){
     for(auto& c: palette){
         std::stringstream ss;
         ss << c;
-        log(INFO, ss.str());
+        log(PLAIN, ss.str());
+    }
+
+    // BUILD COLOR SELECTION STRATEGY
+    double sparsity = 0;
+    std::function<RGB(const RGB&)> quantizer = [&](const RGB& rgb) -> RGB { return rgb; };
+    if(config["quantization"].is_string() && config["quantization"].get<std::string>().substr(0, 3) == "bit"){
+        int bit_num = std::stoi(config["quantization"].get<std::string>().substr(3));
+        int values_per_channel = std::pow(2, bit_num);
+        double factor = 255.0 / (values_per_channel-1);
+        const auto qchannel = [factor](int x) -> int { 
+            double r =  factor * std::round((double)x / factor); 
+            return r;
+        };
+        quantizer = [qchannel](const RGB &rgb) -> RGB {
+            return RGB(
+                qchannel(rgb.r),
+                qchannel(rgb.g),
+                qchannel(rgb.b),
+                rgb.a
+            );
+        };
+        sparsity = factor;
+    }else if(config["quantization"] == "closest_rgb"){
+        quantizer = [palette](const RGB &rgb) -> RGB {
+            return closestByColor(palette, rgb)[0];
+        };
+        sparsity = 255.0 / palette.size();
+    }else if(config["quantization"] == "closest_gray"){
+        quantizer = [palette](const RGB &rgb) -> RGB {
+            return closestByBrightness(palette, rgb)[0];
+        };
+        sparsity = 255.0 / palette.size();
+    }else if(config["quantization"] != "none"){
+        log(ERROR, "Bad quantization option: " + config["quantization"].dump());
+        return -1;
+    }
+    //// Parameters for ordered dithering
+    auto matrix_it = matrices.find(config["dithering"]["matrix"]);
+       
+    if(matrix_it == matrices.end()){
+        log(ERROR, "Bad matrix option: " + config["dithering"]["matrix"].dump());
+        return -1;
+    }
+    
+    if(config["dithering"]["sparsity"].is_number()){
+        sparsity = config["dithering"]["sparsity"].get<float>();
+    
+    }else if(config["dithering"]["sparsity"] == "auto"){
+        log(INFO, "Auto sparsity: " + std::to_string(sparsity));
+    
+    }else{
+        log(ERROR, "Bad sparsity option: " + config["dithering"]["sparsity"].dump());
+        return -1;
     }
 
     // START FILE PROCESSING
@@ -337,7 +390,7 @@ int main(int argc, char** argv){
         //// Normalization
         if(config["normalize"] == "pre"){
             normalize(img);
-        }else if(config["normalize"] != "pos" && config["normalize"] != "no"){
+        }else if(config["normalize"] != "post" && config["normalize"] != "no"){
             log(ERROR, "Bad normalize option: " + config["normalize"].dump());
             return -1;
         }
@@ -350,42 +403,12 @@ int main(int argc, char** argv){
             config["height"].get<uint>(), 
             config["select_pixel"].get<std::string>()
         );
-        // Quantization strategy
-        // none, bit<number>, closest_rgb, closest_gray
-        double sparsity = 0;
-        std::function<RGB(const RGB&)> quantizer = [&](const RGB& rgb) -> RGB { return rgb; };
-        if(config["quantization"].is_string() && config["quantization"].get<std::string>().substr(0, 3) == "bit"){
-            int bit_num = std::stoi(config["quantization"].get<std::string>().substr(3));
-            int values_per_channel = std::pow(2, bit_num);
-            double factor = 255.0 / (values_per_channel-1);
-            const auto qchannel = [factor](int x) -> int { 
-                double r =  factor * std::round((double)x / factor); 
-                return r;
-            };
-            quantizer = [qchannel](const RGB &rgb) -> RGB {
-                return RGB(
-                    qchannel(rgb.r),
-                    qchannel(rgb.g),
-                    qchannel(rgb.b),
-                    rgb.a
-                );
-            };
-            sparsity = factor;
-        }else if(config["quantization"] == "closest_rgb"){
-                quantizer = [palette](const RGB &rgb) -> RGB {
-                    return closestByColor(palette, rgb)[0];
-                };
-                sparsity = 255.0 / palette.size();
-        }else if(config["quantization"] == "closest_gray"){
-                quantizer = [palette](const RGB &rgb) -> RGB {
-                    return closestByBrightness(palette, rgb)[0];
-                };
-                sparsity = 255.0 / palette.size();
-        }else if(config["quantization"] != "none"){
-                log(ERROR, "Bad quantization option: " + config["quantization"].dump());
-                return -1;
-        }
+        
 
+        //// Normalization
+        if(config["normalize"] == "post"){
+            normalize(out);
+        }
         // Quantization and dithering
         if(config["dithering"]["method"] == "floydsteinberg"){
 
@@ -393,23 +416,6 @@ int main(int argc, char** argv){
 
         }else if(config["dithering"]["method"] == "ordered"){
 
-            auto matrix_it = matrices.find(config["dithering"]["matrix"]);
-            
-            if(matrix_it == matrices.end()){
-                log(ERROR, "Bad matrix option: " + config["dithering"]["matrix"].dump());
-                return -1;
-            }
-            
-            if(config["dithering"]["sparsity"].is_number()){
-                sparsity = config["dithering"]["sparsity"].get<float>();
-            
-            }else if(config["dithering"]["sparsity"] == "auto"){
-                log(INFO, "Auto sparsity: " + std::to_string(sparsity));
-            
-            }else{
-                log(ERROR, "Bad sparsity option: " + config["dithering"]["sparsity"].dump());
-                return -1;
-            }
             ditherOrdered(out, quantizer, matrix_it->second, sparsity);
             
         }else if(config["dithering"]["method"] == "none"){
@@ -423,10 +429,6 @@ int main(int argc, char** argv){
         
         }
 
-        //// Normalization
-        if(config["normalize"] == "pos"){
-            normalize(out);
-        }
         
         // SAVE IT
         log(INFO, "Saving...", "");
