@@ -5,6 +5,7 @@
 #include <map>
 #include <regex>
 #include <string>
+#include <sstream>
 #include <vector>
 
 #include <SFML/Graphics.hpp>
@@ -215,9 +216,10 @@ int main(int argc, char** argv){
         {"palette", 
             {
                 {"main", "00ff00"}, // <color>
-                {"scheme", "00ff00"}, // mono, analogous, complementary, triadic, split_complementary, complementary_spectre, rectangle, square 
-                {"spectre_size", 3}, // <number>
-                {"complete", false} // <number>
+                {"scheme", "00ff00"}, // mono, analogous, complementary, triadic, split_complementary, rectangle, square 
+                {"spectre", "linear"}, // complete, linear 
+                {"inter", 3}, // <number>
+                {"disparity", 0.85} // <number>
             } // object or <color> array
         }
     };
@@ -245,14 +247,74 @@ int main(int argc, char** argv){
     log(PLAIN, config.dump(2));
 
     // PALETTE BUILDING
-    Palette palette;
+    Palette base_colors;
+    Palette palette = {};
     auto str2rgb = [](const std::string& str)->RGB{return RGB((std::stoi(str, nullptr, 16) << 8) | 0xff);};
     if(config["palette"].is_array()){
         for(auto& col: config["palette"]){
             palette.push_back(str2rgb(col.get<std::string>()));
         }
     }else{
-        palette = {str2rgb(config["palette"]["main"].get<std::string>())};
+        RGB main = str2rgb(config["palette"]["main"].get<std::string>());
+        float disparity = config["palette"]["disparity"].get<float>();
+        int inter = config["palette"]["inter"].get<int>();
+        auto make_spectre = [disparity, inter](Palette p) -> Palette {
+            RGB darkest = lerp(p[0], RGB(0), disparity);
+            RGB lightest = lerp(p[p.size()-1], RGB(0xffffffff), disparity);
+            Palette half = gradient({darkest}, p, std::floor((float)inter/2));
+            Palette whole = gradient(half, {lightest}, std::ceil((float)inter/2));
+            return whole;
+        };
+
+        if(config["palette"]["scheme"] == "mono"){
+            base_colors = {main};
+            
+        }else if(config["palette"]["scheme"] == "analogous"){
+            base_colors = {shiftHue(main, 30), main, shiftHue(main, -30)};
+            
+        }else if(config["palette"]["scheme"] == "complementary"){
+            base_colors = {shiftHue(main, 180), main};
+
+        }else if(config["palette"]["scheme"] == "triadic"){
+            base_colors = {shiftHue(main, 120), main, shiftHue(main, -120)};
+        
+        }else if(config["palette"]["scheme"] == "split_complementary"){
+            base_colors = {shiftHue(main, 150), main, shiftHue(main, -150)};
+        
+        }else if(config["palette"]["scheme"] == "rectangle"){
+            base_colors = {main, shiftHue(main, 60), shiftHue(main, 180), shiftHue(main, 240)};
+        
+        }else if(config["palette"]["scheme"] == "square"){
+            base_colors = {main, shiftHue(main, 90), shiftHue(main, 180), shiftHue(main, 270)};
+
+        }else{
+            log(ERROR, "Bad palette.scheme option: " + config["palette"]["scheme"].dump());
+            return -1;
+        }
+
+        if(config["palette"]["spectre"] == "complete"){
+            for(auto col: base_colors){
+                Palette spectre = make_spectre({col});
+                palette = gradient(palette, spectre, 0);
+            }
+        }else if(config["palette"]["spectre"] == "linear"){
+            palette = make_spectre(closestByBrightness(base_colors, RGB(0)));
+        }else{
+            log(ERROR, "Bad palette.spectre option: " + config["palette"]["spectre"].dump());
+            return -1;
+        }
+    }
+    
+    // https://stackoverflow.com/questions/16476099/remove-duplicate-entries-in-a-c-vector#16476268
+    palette = closestByBrightness(palette, RGB(0));
+    auto last = std::unique(palette.begin(), palette.end());
+    palette.erase(last, palette.end());
+
+    log(IMPORTANT, "Palette");
+    for(auto& c: palette){
+        std::stringstream ss;
+        ss << c;
+        log(INFO, ss.str());
     }
 
     // START FILE PROCESSING

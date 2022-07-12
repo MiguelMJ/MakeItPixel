@@ -12,6 +12,8 @@ namespace mipa{
         return palette;
     }
     Palette gradient(Palette from, const Palette& to, int steps){
+        if(from.size() == 0) return to;
+        if(to.size() == 0) return from;
         Palette& palette = from;
         RGB last = *from.rbegin();
         float step = 1.f / (steps+1);
