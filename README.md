@@ -18,37 +18,36 @@ Make It Pixel is a programming language to process images to look like pixel art
 
 ## Preview
 
-(image and output examples here)
+Here's an example of different results processing an image with different configurations
+<p align="center">
+<img width="49%" src="examples/monalisa.png">
+</p>
+<img width="49%" src="examples/config1.png">
+<img width="49%" src="examples/config2.png">
+<img width="49%" src="examples/config3.png">
+<img width="49%" src="examples/config4.png">
 
 ## Features
 
-- Intelligent, native handling of color and palettes.
-- Customizable strategies for:
-  - Pixelization.
-  - Color quantization.
+- Intelligent handling of color and palettes.
+- Strategies for:
+  - Color selection during scaling.
+  - Color quantization after scaling.
   - Dithering.
-- Support for script mode and interactive mode.
-- Live preview for the processed images in the interactive mode.
+- Fully customizable both by configuration file and console.
 
 ## Dependencies
 
 Runtime libraries:
 
-- [SFML v2.5.1](https://www.sfml-dev.org/index.php) (required)
-- [GNU Readline 8.1](https://tiswww.case.edu/php/chet/readline/rltop.html) (optional for the interactive mode)
+- [SFML v2.5.1](https://www.sfml-dev.org/index.php) 
 
 ## Build
 
 If you have the dependencies, a C++ compiler and GNU Makefile in your system, you can simply run:
 
 ```shell
-make
-```
-
-To build the documentation, [Doxygen 1.9.1](https://www.doxygen.nl/index.html) is required.
-
-```shell
-make docs
+g++ src/* -Iinclude -lsfml-graphics -o makeitpixel
 ```
 
 ## License
