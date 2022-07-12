@@ -248,7 +248,7 @@ int main(int argc, char** argv){
         {"palette", 
             {
                 {"main", "00ff00"}, // <color>
-                {"scheme", "00ff00"}, // mono, analogous, complementary, triadic, split_complementary, rectangle, square 
+                {"scheme", "analogous"}, // mono, analogous, complementary, triadic, split_complementary, rectangle, square 
                 {"spectre", "linear"}, // complete, linear 
                 {"inter", 3}, // <number>
                 {"disparity", 0.85} // <number>
