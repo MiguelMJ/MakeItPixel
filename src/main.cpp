@@ -55,7 +55,7 @@ void log(LogType level, std::string msg_pre, std::string end="\n"){
  * IMAGE PROCESSING FUNCTIONS
  */
 
-void pixelize(sf::Image& newimg, const sf::Image& image, uint max_width, uint max_height, const std::string& selector="avg"){
+sf::Image pixelize(const sf::Image& image, uint max_width, uint max_height, const std::string& selector="avg"){
     log(INFO, "Pixelizing...", "");
     sf::Vector2u origImgSize = image.getSize();
     float ratio = (float)origImgSize.y/origImgSize.x;
@@ -96,7 +96,7 @@ void pixelize(sf::Image& newimg, const sf::Image& image, uint max_width, uint ma
     }else{
         throw std::runtime_error("Unkown pixel selector: "+selector);
     }
-
+    sf::Image newimg;
     float blockwidth = (float)origImgSize.x / width;
     float blockheight = (float)origImgSize.y / height;
     newimg.create(width, height);
@@ -117,6 +117,7 @@ void pixelize(sf::Image& newimg, const sf::Image& image, uint max_width, uint ma
             }
         }
     }
+    return newimg;
 }
 
 void normalize(sf::Image& image){
@@ -396,8 +397,7 @@ int main(int argc, char** argv){
         }
 
         //// Scaling
-        pixelize(
-            out, 
+        out = pixelize(
             img, 
             config["width"].get<uint>(), 
             config["height"].get<uint>(), 
