@@ -151,16 +151,28 @@ void normalize(sf::Image& image){
     }
 }
 
+void palette_to_file(const Palette& palette, const std::string& path, int rows=1){
+    sf::Image image;
+    image.create(50*palette.size()/rows, 150*rows);
+    for(int r = 0; r < image.getSize().y; r++){
+        for(int c = 0; c < image.getSize().x; c++){
+            image.setPixel(c,r,palette[(r/150)*(palette.size()/rows)+c/50]);
+        }
+    }
+    image.saveToFile(path);
+}
+
 void print_help(){
-    std::cout << "Usage: makeitpixel [-h] [-c FILE] [-x JSON] [-o DIR] FILES..." << std::endl;
+    std::cout << "Usage: makeitpixel [OPTIONS] FILES..." << std::endl;
     std::cout << "" << std::endl;
     std::cout << "Program to make images look like pixel art." << std::endl;
     std::cout << "" << std::endl;
     std::cout << "OPTIONS" << std::endl;
-    std::cout << "  -h, --help              Print this help message and exit." << std::endl;
-    std::cout << "  -x, --config CONFIG     Set the CLI configuration as a JSON formatted string." << std::endl;
     std::cout << "  -c, --config-file PATH  Set the configuration file." << std::endl;
+    std::cout << "  -h, --help              Print this help message and exit." << std::endl;
     std::cout << "  -o, --output-dir DIR    Set the output directory for the generated images." << std::endl;
+    std::cout << "  -p, --palette PATH      Create an image to display the palette." << std::endl;
+    std::cout << "  -x, --config CONFIG     Set the CLI configuration as a JSON formatted string." << std::endl;
     exit(0);
 }
 
@@ -177,14 +189,16 @@ int main(int argc, char** argv){
         {"-c", "--config-file"},
         {"-x", "--config"},
         {"-o", "--output-dir"},
-        {"-h", "--help"}
+        {"-h", "--help"},
+        {"-p", "--palette"},
     };
     std::map<std::string, bool> flags = {
     };
     std::map<std::string, std::string> opts = {
         {"--config", "{}"},
         {"--config-file", ""},
-        {"--output-dir", "."}
+        {"--output-dir", "."},
+        {"--palette", ""},
     };
     std::vector<std::string> positional;
     std::string last_opt;
@@ -223,7 +237,7 @@ int main(int argc, char** argv){
         log(ERROR, last_real_opt + " expected an option value");
         return -1;
     }
-    if(positional.size() == 0){
+    if(positional.size() == 0 && opts["--palette"] == ""){
         log(ERROR, "No files provided");
         return -1;
     }
@@ -275,10 +289,11 @@ int main(int argc, char** argv){
         config.merge_patch(cli_config);
     }
     
-    log(IMPORTANT, "Configuration");
-    log(PLAIN, config.dump(2));
+    // log(IMPORTANT, "Configuration");
+    // log(PLAIN, config.dump(2));
 
     // PALETTE BUILDING
+    log(IMPORTANT, "Palette");
     Palette base_colors;
     Palette palette = {};
     auto str2rgb = [](std::string str)->RGB{
@@ -287,6 +302,7 @@ int main(int argc, char** argv){
         }
         return RGB((std::stoi(str, nullptr, 16) << 8) | 0xff);
     };
+    int palette_rows = 1;
     if(config["palette"].is_array()){
         for(auto& col: config["palette"]){
             palette.push_back(str2rgb(col.get<std::string>()));
@@ -307,29 +323,63 @@ int main(int argc, char** argv){
             base_colors = {main};
             
         }else if(config["palette"]["scheme"] == "analogous"){
-            base_colors = {shiftHue(main, 30), main, shiftHue(main, -30)};
-            
+            base_colors = {
+                shiftHue(main, 30), 
+                main, 
+                shiftHue(main, 330),
+                shiftHue(main, -30)
+            };
+
         }else if(config["palette"]["scheme"] == "complementary"){
-            base_colors = {shiftHue(main, 180), main};
+            base_colors = {
+                shiftHue(main, 180),
+                shiftHue(main, -180),
+                main
+            };
 
         }else if(config["palette"]["scheme"] == "triadic"){
-            base_colors = {shiftHue(main, 120), main, shiftHue(main, -120)};
+            base_colors = {
+                shiftHue(main, 120), 
+                main, 
+                shiftHue(main, -120),
+                shiftHue(main, 240)
+            };
         
         }else if(config["palette"]["scheme"] == "split_complementary"){
-            base_colors = {shiftHue(main, 150), main, shiftHue(main, -150)};
+            base_colors = {
+                shiftHue(main, 150),
+                main,
+                shiftHue(main, 210),
+                shiftHue(main, -150)
+            };
         
         }else if(config["palette"]["scheme"] == "rectangle"){
-            base_colors = {main, shiftHue(main, 60), shiftHue(main, 180), shiftHue(main, 240)};
+            base_colors = {
+                main, 
+                shiftHue(main, 60), 
+                shiftHue(main, 180), 
+                shiftHue(main, -180), 
+                shiftHue(main, -120), 
+                shiftHue(main, 240)
+            };
         
         }else if(config["palette"]["scheme"] == "square"){
-            base_colors = {main, shiftHue(main, 90), shiftHue(main, 180), shiftHue(main, 270)};
+            base_colors = {
+                main, 
+                shiftHue(main, 90), 
+                shiftHue(main, 180), 
+                shiftHue(main, -180), 
+                shiftHue(main, -90), 
+                shiftHue(main, 270)
+            };
 
         }else{
             log(ERROR, "Bad palette.scheme option: " + config["palette"]["scheme"].dump());
             return -1;
         }
-
+        log(INFO, "Scheme: " + config["palette"]["scheme"].get<std::string>());
         if(config["palette"]["spectre"] == "complete"){
+            palette_rows = base_colors.size();
             for(auto col: base_colors){
                 Palette spectre = make_spectre({col});
                 palette = gradient(palette, spectre, 0);
@@ -342,16 +392,26 @@ int main(int argc, char** argv){
         }
     }
     
+
+    Palette printable_palette = palette;
     //// https://stackoverflow.com/questions/16476099/remove-duplicate-entries-in-a-c-vector#16476268
     palette = closestByBrightness(palette, RGB(0));
     auto last = std::unique(palette.begin(), palette.end());
     palette.erase(last, palette.end());
+    last = std::unique(printable_palette.begin(), printable_palette.end());
+    printable_palette.erase(last, printable_palette.end());
 
-    log(IMPORTANT, "Palette");
+    
     for(auto& c: palette){
         std::stringstream ss;
         ss << c;
         log(PLAIN, "#" + ss.str());
+    }
+
+    if(opts["--palette"] != ""){
+        log(INFO, "Displaying palette");
+        palette_to_file(printable_palette, opts["--palette"], palette_rows);
+        log(SUCCESS, "Palette displayed in " + opts["--palette"]);
     }
 
     // BUILD COLOR SELECTION STRATEGY

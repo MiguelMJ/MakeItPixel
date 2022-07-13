@@ -1,5 +1,6 @@
 #include "Color.hpp"
 
+#include <iostream>
 #include <iomanip>
 #include <cmath>
 
@@ -66,9 +67,9 @@ namespace mipa{
     HSV toHSV(const RGB& rgb){
         HSV hsv;
         hsv.a = rgb.a;
-        float r = (float)rgb.r / 255;
-        float g = (float)rgb.g / 255;
-        float b = (float)rgb.b / 255;
+        double r = (double)rgb.r / 255.0;
+        double g = (double)rgb.g / 255.0;
+        double b = (double)rgb.b / 255.0;
         double min = std::min(std::min(r, g), b);
         double max = std::max(std::max(r, g), b);
         double delta = max - min;
@@ -80,23 +81,30 @@ namespace mipa{
             return hsv;
         }
         hsv.s = delta / max;
+
         if(r >= max){
-            hsv.h = (rgb.g - rgb.b) / delta;
+            hsv.h = (g - b) / delta;
         }else if(g >= max){
-            hsv.h = 2.0 + (rgb.b - rgb.r) / delta;
+            hsv.h = 2.0 + (b - r) / delta;
         }else{
-            hsv.h = 4.0 + (rgb.r - rgb.g) / delta;
+            hsv.h = 4.0 + (r - g) / delta;
         }
         hsv.h *= 60.0;
         if(hsv.h < 0){
             hsv.h += 360.0;
         }
+        std::cerr << " => " << hsv.h << std::endl;
         return hsv;
     }
 
     RGB shiftHue(const RGB& color, float angle){
         HSV hsv = toHSV(color);
-        hsv.h += angle;
+        double hue = hsv.h;
+        hue += 360.f + angle;
+        while(hue > 360.f){
+            hue -= 360.f;
+        }
+        hsv.h = hue;
         return toRGB(hsv);
     }
     RGB saturation(const RGB& color, float t){

@@ -11,7 +11,7 @@
     },
     "palette": {
         "main": "#1820a0",
-        "scheme": "rectangle",
+        "scheme": "square",
         "spectre": "complete",
         "inter": 2,
         "disparity": 0.2
