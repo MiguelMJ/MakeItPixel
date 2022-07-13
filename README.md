@@ -27,6 +27,8 @@ Example results:
 - [Features](#features)
 - [Dependencies](#dependencies)
 - [Build](#build)
+- [Contributing](#contributing)
+- [Contributors](#contributors)
 - [Usage](#usage)
   - [CLI options](#cli-options)
   - [Configuration](#configuration)
@@ -57,7 +59,22 @@ If you have the dependencies installed and a C++ compiler, you can simply run:
 g++ src/* -Iinclude -lsfml-graphics -o makeitpixel
 ```
 
+## Contributing
+
+- Read the [contributing guidelines](CONTRIBUTING.md) if you want to contribute to the code.
+- Open a new issue [![(issues)](https://img.shields.io/github/issues/MiguelMJ/MakeItPixel?logo=github&style=social)](https://github.com/MiguelMJ/Candle/issues/new) to make a request or report a bug.
+- If you use it in a project, you don't have to give any credit. But if you did so, that would be fantastic!
+- And of course, :star:  **star this repository** and give it some visibility [![(stargazers)](https://img.shields.io/github/stars/MiguelMJ/MakeItPixel?style=social)](https://github.com/MiguelMJ/Candle/stargazers).
+
+## Contributors
+This list is empty... for now ;)
+
+***
+
 ## Usage
+
+> Here you have a complete but general description. In the [wiki](wiki) you'll find a more detailed explanation of how MakeItPixel works and how to configure it.
+
 ```
 makeitpixel [-h] [-c FILE] [-x JSON] [-o DIR] FILES..
 ```
@@ -150,6 +167,9 @@ If you are using a quantization strategy that requires a palette, you can config
   | `"complete"` | Add darker and brighter values for each base color. Result in richer palettes. |
 - **`palette.inter`**: Aproximate number of intermediate darker and brighter values.
 - **`palette.disparity`**: Factor between 0 and 1 to get the darker and brighter values of the palette by interpolation. A value of 0 results in leaving only the base colors; a value of 1 includes black and white in the palette. Must be a number between 0 and 1 (default = 0.85). 
+
+***
+
 ## License
 
 Make It Pixel uses the MIT License, a copy of which you can find [here](LICENSE), in the repo.
