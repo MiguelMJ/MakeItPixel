@@ -312,7 +312,7 @@ int main(int argc, char** argv){
         float disparity = config["palette"]["disparity"].get<float>();
         int inter = config["palette"]["inter"].get<int>();
         auto make_spectre = [disparity, inter](Palette p) -> Palette {
-            RGB darkest = lerp(p[0], RGB(0), disparity);
+            RGB darkest = lerp(p[0], RGB(0xff), disparity);
             RGB lightest = lerp(p[p.size()-1], RGB(0xffffffff), disparity);
             Palette half = gradient({darkest}, p, std::floor((float)inter/2));
             Palette whole = gradient(half, {lightest}, std::ceil((float)inter/2));
@@ -385,7 +385,7 @@ int main(int argc, char** argv){
                 palette = gradient(palette, spectre, 0);
             }
         }else if(config["palette"]["spectre"] == "linear"){
-            palette = make_spectre(closestByBrightness(base_colors, RGB(0)));
+            palette = make_spectre(closestByBrightness(base_colors, RGB(0xff)));
         }else{
             log(ERROR, "Bad palette.spectre option: " + config["palette"]["spectre"].dump());
             return -1;
@@ -395,7 +395,7 @@ int main(int argc, char** argv){
 
     Palette printable_palette = palette;
     //// https://stackoverflow.com/questions/16476099/remove-duplicate-entries-in-a-c-vector#16476268
-    palette = closestByBrightness(palette, RGB(0));
+    palette = closestByBrightness(palette, RGB(0xff));
     auto last = std::unique(palette.begin(), palette.end());
     palette.erase(last, palette.end());
     last = std::unique(printable_palette.begin(), printable_palette.end());

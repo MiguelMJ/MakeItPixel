@@ -6,20 +6,6 @@
 
 <p align="center"><img src="https://img.shields.io/badge/C++-11-00599C?style=flat-square&logo=c%2B%2B"> <img src="https://img.shields.io/badge/SFML-v2.5.1-8CC445?logo=SFML&style=flat-square"> <a href="https://miguelmj.github.io/Candle"><!-- img src="https://img.shields.io/badge/code-documented-success?style=flat-square"/ --></a> <img src="https://img.shields.io/badge/version-v0.1-informational?style=flat-square"/> <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-informational?style=flat-square"/></a></p>
 
-Table of Contents
-
-- [Preview](#preview)
-- [Features](#features)
-- [Dependencies](#dependencies)
-- [Build](#build)
-- [Usage](#usage)
-  - [CLI options](#cli-options)
-  - [Configuration](#configuration)
-    - [Scaling](#scaling)
-    - [Color quantization](#color-quantization)
-    - [Palette](#palette)
-- [License](#license)
-
 ## Preview
 
 Original: 
@@ -34,6 +20,21 @@ Example results:
 | <img src="examples/config3.png"> | <img src="examples/config4.png"> |
 
 </p>
+
+<strong>Table of contents</strong>
+
+- [Preview](#preview)
+- [Features](#features)
+- [Dependencies](#dependencies)
+- [Build](#build)
+- [Usage](#usage)
+  - [CLI options](#cli-options)
+  - [Configuration](#configuration)
+    - [Scaling](#scaling)
+    - [Color quantization](#color-quantization)
+    - [Palette](#palette)
+- [License](#license)
+
 
 ## Features
 
