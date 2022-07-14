@@ -41,11 +41,10 @@ Example results:
 ## Features
 
 - Intelligent handling of color and palettes.
-- Strategies for:
-  - Color selection during scaling.
-  - Color quantization after scaling.
-  - Dithering.
-- Fully customizable both by configuration file and console.
+- Configure color selection during downscaling.
+- Configure color quantization and dithering.
+- Fully customizable both by file and console.
+- Process dozens of files with in a single run.
 
 ## Dependencies
 
