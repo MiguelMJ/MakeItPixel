@@ -52,10 +52,10 @@ namespace mipa{
     const Matrix Horizontal4 = {
         4,4,
         {
-            0, 5, 0, 5,
+            0, 0, 0, 0,
             5, 5, 5, 5,
-            15, 10, 15, 10,
-            15, 15, 15, 15
+            15, 15, 15, 15,
+            10, 10, 10, 10
         }
     };
     const Matrix Vertical2 = {
@@ -68,10 +68,10 @@ namespace mipa{
     const Matrix Vertical4 = {
         4,4,
         {
-            0,5,15,15,
-            5,5,10,15,
-            0,5,15,15,
-            5,5,10,15
+            0,5,15,10,
+            0,5,15,10,
+            0,5,15,10,
+            0,5,15,10
         }
     };
     const Matrix Heart = {

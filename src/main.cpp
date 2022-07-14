@@ -243,6 +243,9 @@ int main(int argc, char** argv){
     }
     // A BIT OF POSTPROCESSING THE ARGS
     opts["--output-dir"] += sep;
+    if(opts["--palette"].size() > 0){
+        opts["--palette"] = opts["--output-dir"] + opts["--palette"];
+    }
 
     // DEFAULT CONFIGURATION
     json config = {
@@ -506,13 +509,14 @@ int main(int argc, char** argv){
             normalize(out);
         }
         // Quantization and dithering
+        float threshold = config["dithering"]["threshold"].get<float>() * 255 / 100000;
         if(config["dithering"]["method"] == "floydsteinberg"){
 
-            ditherFloydSteinberg(out, quantizer);
+            ditherFloydSteinberg(out, quantizer, threshold);
 
         }else if(config["dithering"]["method"] == "ordered"){
 
-            ditherOrdered(out, quantizer, matrix_it->second, sparsity);
+            ditherOrdered(out, quantizer, matrix_it->second, sparsity, threshold);
             
         }else if(config["dithering"]["method"] == "none"){
 

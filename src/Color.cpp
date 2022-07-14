@@ -1,6 +1,5 @@
 #include "Color.hpp"
 
-#include <iostream>
 #include <iomanip>
 #include <cmath>
 
@@ -93,7 +92,6 @@ namespace mipa{
         if(hsv.h < 0){
             hsv.h += 360.0;
         }
-        std::cerr << " => " << hsv.h << std::endl;
         return hsv;
     }
 
