@@ -5,7 +5,7 @@
     "width": 64,
     "quantization": "bit2",
     "dithering": {
-        "method": "ordered",
+        "method": "floydsteinberg",
         "matrix": "Bayes2"
     }
 }

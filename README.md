@@ -4,7 +4,7 @@
 
 <h3 align="center">Make images look like pixel art</h3>
 
-<p align="center"><img src="https://img.shields.io/badge/C++-11-00599C?style=flat-square&logo=c%2B%2B"> <img src="https://img.shields.io/badge/SFML-v2.5.1-8CC445?logo=SFML&style=flat-square"> <a href="https://miguelmj.github.io/Candle"><!-- img src="https://img.shields.io/badge/code-documented-success?style=flat-square"/ --></a> <img src="https://img.shields.io/badge/version-v0.1-informational?style=flat-square"/> <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-informational?style=flat-square"/></a></p>
+<p align="center"><img src="https://img.shields.io/badge/C++-11-00599C?style=flat-square&logo=c%2B%2B"> <img src="https://img.shields.io/badge/SFML-v2.5.1-8CC445?logo=SFML&style=flat-square"> <img src="https://img.shields.io/badge/version-v0.1-informational?style=flat-square"/> <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-informational?style=flat-square"/></a><a href="https://github.com/MiguelMJ/MakeItPixel/wiki"><img src="https://img.shields.io/badge/code-documented-success?style=flat-square"></a></p>
 
 ## Preview
 
@@ -73,7 +73,7 @@ This list is empty... for now ;)
 
 ## Usage
 
-> Here you have a complete but general description. In the [wiki](wiki) you'll find a more detailed explanation of how MakeItPixel works and how to configure it.
+> In the [wiki](https://github.com/MiguelMJ/MakeItPixel/wiki)) you'll find a detailed explanation of how MakeItPixel works and how to configure it.
 
 ```
 makeitpixel [-h] [-c FILE] [-x JSON] [-o DIR] FILES..
