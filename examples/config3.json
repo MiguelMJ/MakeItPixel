@@ -1,19 +1,22 @@
 {
-    "normalize": "no",
-    "select_pixel": "avg",
+    "normalize": "post",
+    "select_pixel": "med",
     "height": 64,
     "width": 64,
-    "quantization": "closest_gray",
+    "quantization": "closest_rgb",
     "dithering": {
         "method": "ordered",
-        "matrix": "Bayes8",
-        "sparsity": "auto"
+        "matrix": "Bayes8"
     },
-    "palette": {
-        "main": "#1820a0",
-        "scheme": "square",
-        "spectre": "complete",
-        "inter": 2,
-        "disparity": 0.2
-    }
+    "palette": [
+        "313327",
+        "797d62",
+        "9b9b7a",
+        "d9ae94",
+        "f1dca7",
+        "ffcb69",
+        "d08c60",
+        "997b66",
+        "4c3d33"
+    ]
 }

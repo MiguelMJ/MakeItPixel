@@ -62,6 +62,7 @@ g++ src/* -Iinclude -lsfml-graphics -o makeitpixel
 
 - Read the [contributing guidelines](CONTRIBUTING.md) if you want to contribute to the code.
 - Open a new issue [![(issues)](https://img.shields.io/github/issues/MiguelMJ/MakeItPixel?logo=github&style=social)](https://github.com/MiguelMJ/Candle/issues/new) to make a request or report a bug.
+- Alternatively, comment it on the [SFML forum](https://en.sfml-dev.org/forums/index.php?topic=28619.0).
 - If you use it in a project, you don't have to give any credit. But if you did so, that would be fantastic!
 - And of course, :star:  **star this repository** and give it some visibility [![(stargazers)](https://img.shields.io/github/stars/MiguelMJ/MakeItPixel?style=social)](https://github.com/MiguelMJ/Candle/stargazers).
 
@@ -72,7 +73,7 @@ This list is empty... for now ;)
 
 ## Usage
 
-> In the [wiki](https://github.com/MiguelMJ/MakeItPixel/wiki)) you'll find a detailed explanation of how MakeItPixel works and how to configure it.
+> In the [wiki](https://github.com/MiguelMJ/MakeItPixel/wiki) you'll find a detailed explanation of how MakeItPixel works and how to configure it.
 
 ```
 makeitpixel [-h] [-c FILE] [-x JSON] [-o DIR] FILES..
