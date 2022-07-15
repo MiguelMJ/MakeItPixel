@@ -6,8 +6,7 @@
     "quantization": "closest_gray",
     "dithering": {
         "method": "ordered",
-        "matrix": "Horizontal2",
-        "sparsity": "auto"
+        "matrix": "Horizontal2"
     },
     "palette": {
         "main": "009900",

@@ -1,13 +1,10 @@
 {
-    "normalize": "no",
     "select_pixel": "med",
     "height": 64,
     "width": 64,
     "quantization": "closest_gray",
     "dithering": {
-        "method": "floydsteinberg",
-        "matrix": "Bayes2",
-        "sparsity": "auto"
+        "method": "floydsteinberg"
     },
     "palette": ["0f0f0f" ,"f0f0f0"]
 }
