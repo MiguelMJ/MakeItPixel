@@ -36,6 +36,7 @@ Example results:
     - [Scaling](#scaling)
     - [Color quantization](#color-quantization)
     - [Palette](#palette)
+- [Examples](#examples)
 - [License](#license)
 
 
@@ -172,6 +173,10 @@ If you are using a quantization strategy that requires a palette, you can config
   | `"complete"` | Add darker and brighter values for each base color. Result in richer palettes. |
 - **`palette.inter`**: Aproximate number of intermediate darker and brighter values.
 - **`palette.disparity`**: Factor between 0 and 1 to get the darker and brighter values of the palette by interpolation. A value of 0 results in leaving only the base colors; a value of 1 includes black and white in the palette. Must be a number between 0 and 1 (default = 0.85). 
+
+## Examples
+
+You will find example configuration files to showcase the usage of different parameters in the [examples](https://github.com/MiguelMJ/MakeItPixel/tree/main/examples) folder.
 
 ***
 
