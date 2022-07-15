@@ -25,6 +25,7 @@ Example results:
 
 - [Preview](#preview)
 - [Features](#features)
+  - [Future features](#future-features)
 - [Dependencies](#dependencies)
 - [Build](#build)
 - [Contributing](#contributing)
@@ -40,19 +41,23 @@ Example results:
 
 ## Features
 
-- Intelligent handling of color and palettes.
+- Intelligent and customizable handling of color and palettes.
 - Configure color selection during downscaling.
 - Configure color quantization and dithering.
 - Fully customizable both by file and console.
 - Process dozens of files with in a single run.
+- Fully documented.
+
+### Future features
+
+- [ ] Parameters to generate outlines using border detection.
+- [ ] Add options to blur before downscaling to reduce noice. 
 
 ## Dependencies
 
 - [SFML v2.5.1](https://www.sfml-dev.org/index.php) ([release](https://github.com/SFML/SFML/releases/tag/2.5.1))
 
 ## Build
-
-If you have the dependencies installed and a C++ compiler, you can simply run:
 
 ```shell
 g++ src/* -Iinclude -lsfml-graphics -o makeitpixel

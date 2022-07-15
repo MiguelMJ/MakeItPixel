@@ -3,9 +3,9 @@
     "select_pixel": "med",
     "height": 64,
     "width": 64,
-    "quantization": "bit2",
+    "quantization": "bit3",
     "dithering": {
-        "method": "floydsteinberg",
-        "matrix": "Bayes2"
+        "method": "ordered",
+        "matrix": "Bayes8"
     }
 }
