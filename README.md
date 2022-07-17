@@ -53,6 +53,7 @@ Example results:
 
 - [ ] Parameters to generate outlines using border detection.
 - [ ] Add options to blur before downscaling to reduce noice. 
+- [ ] Smart palette extraction from images. 
 
 ## Dependencies
 
