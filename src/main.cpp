@@ -151,6 +151,72 @@ void normalize(sf::Image& image){
     }
 }
 
+sf::Image apply_convolution(sf::Image image, const Matrix& m){
+    auto imageSize = image.getSize();
+    int half_w = std::floor((float)m.getWidth() / 2.f);
+    int half_h = std::floor((float)m.getHeight() / 2.f);
+    sf::Image new_img;
+    new_img.create(imageSize.x, imageSize.y);
+    for(int r = 0; r < imageSize.y; r++){
+        for(int c = 0; c < imageSize.x; c++){
+            float finalR = 0, finalG = 0, finalB = 0;
+            for(int mr = 0; mr < m.getHeight(); mr++){
+                for(int mc = 0; mc < m.getWidth(); mc++){
+                    int pixel_r = r - half_h + mr;
+                    int pixel_c = c - half_w + mc;
+                    if(
+                        pixel_r < imageSize.y && pixel_r >= 0 
+                        && pixel_c < imageSize.x && pixel_c >= 0
+                    ){
+                        RGB rgb  = image.getPixel(pixel_c, pixel_r);
+                        float factor = m.get(mr, mc);
+                        finalR += factor * rgb.r;
+                        finalG += factor * rgb.g;
+                        finalB += factor * rgb.b;
+                    }
+                }
+            }
+            new_img.setPixel(c, r, RGB(std::abs(finalR), std::abs(finalG), std::abs(finalB)));
+        }
+    }
+    return new_img;
+}
+
+sf::Image sobel(sf::Image image, float threshold=0.f){
+    for(int i=0; i<image.getSize().x; i++){
+        for(int j=0; j<image.getSize().y; j++){
+            image.setPixel(i,j,grayScale(image.getPixel(i,j)));
+        }   
+    }
+    sf::Image edgesY = apply_convolution(image, {3,3,{
+        1,  1,  1,
+        0,  0,  0,
+        -1, -1, -1
+    }});
+
+    sf::Image edgesX = apply_convolution(image, {3,3, {
+        -1, 0, 1,
+        -1, 0, 1,
+        -1, 0, 1
+    }});
+    sf::Image edges;
+    edges.create(image.getSize().x, image.getSize().y);
+    for(int i=0; i < image.getSize().x; i++){
+        for(int j=0; j < image.getSize().y; j++){
+            int g = std::sqrt(
+                std::pow(edgesX.getPixel(i, j).r, 2) +
+                std::pow(edgesY.getPixel(i, j).r, 2)
+            );
+            if(g >= threshold*255){
+                edges.setPixel(i, j, RGB(g,0, 0, 0));
+            }else{
+                edges.setPixel(i,j,RGB(0x0));
+            }
+        }
+    }
+    return edges;
+}
+
 void palette_to_file(const Palette& palette, const std::string& path, int rows=1){
     sf::Image image;
     image.create(50*palette.size()/rows, 150*rows);
@@ -249,6 +315,7 @@ int main(int argc, char** argv){
 
     // DEFAULT CONFIGURATION
     json config = {
+        {"blur", 0}, // <number>
         {"normalize", "no"}, // no, pre, post
         {"select_pixel", "avg"}, // avg, med, min, max
         {"width", 64}, // <number>
@@ -493,6 +560,15 @@ int main(int argc, char** argv){
         }else if(config["normalize"] != "post" && config["normalize"] != "no"){
             log(ERROR, "Bad normalize option: " + config["normalize"].dump());
             return -1;
+        }
+
+        // Blurring
+        for(int i=0; i < config["blur"].get<int>(); i++){
+            img = apply_convolution(img, {3,3, {
+                1.f/16, 1.f/8, 1.f/16,
+                1.f/8,  1.f/4, 1.f/8,
+                1.f/16, 1.f/8, 1.f/16,
+            }});
         }
 
         //// Scaling
