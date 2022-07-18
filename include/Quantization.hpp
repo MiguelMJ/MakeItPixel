@@ -5,6 +5,7 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "Matrix.hpp"
 #include "Palette.hpp"
 
 namespace mipa{
@@ -46,14 +47,6 @@ namespace mipa{
             }
         }
     }
-
-    typedef struct{
-        int h, w;
-        std::vector<float> elements;
-        int getHeight() const;
-        int getWidth() const;
-        float get(int r, int c) const;
-    } Matrix;
 
     extern const std::map<std::string, Matrix> matrices;
 
