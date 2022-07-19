@@ -191,8 +191,6 @@ namespace mipa {
         for(int i=0; i < image.getSize().x; i++){
             for(int j=0; j < image.getSize().y; j++){
                 RGB pixel = image.getPixel(i,j);
-                std::stringstream ss;
-                ss << pixel;
                 subSpaces.at(space(pixel.r)).at(space(pixel.g)).at(space(pixel.b)).push_back(pixel);
             }
         }
