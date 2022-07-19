@@ -83,6 +83,15 @@ namespace mipa{
      * @return Palette 
      */
     Palette closestByBrightness(Palette palette, const RGB& color);
+
+    
+    /**
+     * @brief Return a the averaged color of the palette.
+     * 
+     * @param palette Input palette
+     * @return RGB
+     */
+    RGB average(const Palette& palette);
 }
 
 #endif

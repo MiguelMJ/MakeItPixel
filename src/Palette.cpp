@@ -1,7 +1,6 @@
 #include "Palette.hpp"
 
 #include <fstream>
-#include <iostream>
 #include <algorithm>
 
 namespace mipa{
@@ -67,5 +66,16 @@ namespace mipa{
             return std::abs(key - grayValue(a)) < std::abs(key - grayValue(b));
         });
         return palette;
+    }
+    RGB average(const Palette& palette){
+        int sumR = 0, sumG = 0, sumB = 0;
+        for(const auto& rgb: palette){
+            sumR += rgb.r;
+            sumG += rgb.g;
+            sumB += rgb.b;
+        }
+        int n = palette.size();
+        RGB res(sumR / n, sumG / n, sumB / n);
+        return res;
     }
 }

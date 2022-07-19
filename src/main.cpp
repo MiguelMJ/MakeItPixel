@@ -10,10 +10,12 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "Log.hpp"
 #include "json.hpp"
 #include "Color.hpp"
 #include "Palette.hpp"
 #include "Quantization.hpp"
+#include "ImageProcessing.hpp"
 
 #ifdef _WIN32
 const std::string sep("\\");
@@ -23,199 +25,6 @@ const std::string sep("/");
 
 using namespace mipa;
 using json = nlohmann::json;
-
-
-/*
- * LOG FUNCTIONS
- */
-typedef enum {PLAIN, INFO, WARNING, ERROR, IMPORTANT, SUCCESS}  LogType;
-void log(LogType level, std::string msg_pre, std::string end="\n"){
-    std::cerr << "\r\x1b[2K";
-    switch(level){
-        case LogType::INFO:
-         std::cerr << "- ";
-        break;
-        case LogType::WARNING:
-         std::cerr << "\x1b[35mW ";
-        break;
-        case LogType::ERROR:
-         std::cerr << "\x1b[1;31m\u2716 ";
-        break;
-        case LogType::IMPORTANT:
-         std::cerr << "\x1b[1m> ";
-        break;
-        case LogType::SUCCESS:
-         std::cerr << "\x1b[32m\u2714 ";
-        break;
-    }
-    std::cerr << msg_pre << "\x1b[0m" << end;
-}
-
-/*
- * IMAGE PROCESSING FUNCTIONS
- */
-
-sf::Image pixelize(const sf::Image& image, uint max_width, uint max_height, const std::string& selector="avg"){
-    log(INFO, "Pixelizing...", "");
-    sf::Vector2u origImgSize = image.getSize();
-    float ratio = (float)origImgSize.y/origImgSize.x;
-    uint width, height;
-    if(origImgSize.x > origImgSize.y){
-        width = max_width;
-        height = width * ratio;
-    }else{
-        height = max_height;
-        width = height / ratio;
-    }
-    
-    RGB (*selectorfun)(const Palette&);        
-    if(selector == "avg"){
-        selectorfun = [](const Palette& p)->RGB{
-            uint sr=0, sg=0, sb=0, sa=0;
-            for(auto& c: p){
-                sr += c.r;
-                sg += c.g;
-                sb += c.b;
-                sa += c.a;
-            }
-            uint n = p.size();
-            return RGB(sr/n, sg/n, sb/n, sa/n);
-        };
-    }else if(selector == "med"){
-        selectorfun = [](const Palette& p)->RGB{
-            return graySorted(p)[p.size()/2];
-        };
-    }else if(selector == "min"){
-        selectorfun = [](const Palette& p)->RGB{
-            return graySorted(p)[0];
-        };
-    }else if(selector == "max"){
-        selectorfun = [](const Palette& p)->RGB{
-            return graySorted(p)[p.size()-1];
-        };
-    }else{
-        throw std::runtime_error("Unkown pixel selector: "+selector);
-    }
-    sf::Image newimg;
-    float blockwidth = (float)origImgSize.x / width;
-    float blockheight = (float)origImgSize.y / height;
-    newimg.create(width, height);
-    for(uint j = 0; j <= height; j++){
-        for(uint i = 0; i <= width; i++){
-            std::vector<RGB> block;
-            for(uint bj = 0; bj < blockheight; bj++){
-                uint y = j * blockheight + bj;
-                if(y >= origImgSize.y) break;
-                for(uint bi = 0; bi < blockwidth; bi++){
-                    uint x = i * blockwidth + bi;
-                    if(x >= origImgSize.x) break;
-                    block.push_back(image.getPixel(x,y));
-                }
-            }
-            if(!block.empty()){
-                newimg.setPixel(i,j,selectorfun(block));
-            }
-        }
-    }
-    return newimg;
-}
-
-void normalize(sf::Image& image){
-    log(INFO, "Normalizing...", "");
-    sf::Vector2u imgSize = image.getSize();
-    sf::Uint8 minR = 0xff, maxR = 0;
-    sf::Uint8 minG = 0xff, maxG = 0;
-    sf::Uint8 minB = 0xff, maxB = 0;
-    for(int r = 0; r < imgSize.y; r++){
-        for(int c = 0; c < imgSize.x; c++){
-            sf::Color pixel_color = image.getPixel(c, r);
-            minR = std::min(minR, pixel_color.r);
-            minG = std::min(minG, pixel_color.g);
-            minB = std::min(minB, pixel_color.b);
-            maxR = std::max(maxR, pixel_color.r);
-            maxG = std::max(maxG, pixel_color.g);
-            maxB = std::max(maxB, pixel_color.b);
-        }
-    }
-    int dr = maxR - minR;
-    int dg = maxG - minG;
-    int db = maxB - minB;
-    for(int r = 0; r < imgSize.y; r++){
-        for(int c = 0; c < imgSize.x; c++){
-            sf::Color pixel_color = image.getPixel(c, r);
-            pixel_color.r = 255 * ((float)pixel_color.r - minR)/dr;
-            pixel_color.g = 255 * ((float)pixel_color.g - minG)/dg;
-            pixel_color.b = 255 * ((float)pixel_color.b - minB)/db;
-            image.setPixel(c, r, pixel_color);
-        }
-    }
-}
-
-sf::Image apply_convolution(sf::Image image, const Matrix& m){
-    auto imageSize = image.getSize();
-    int half_w = std::floor((float)m.getWidth() / 2.f);
-    int half_h = std::floor((float)m.getHeight() / 2.f);
-    sf::Image new_img;
-    new_img.create(imageSize.x, imageSize.y);
-    for(int r = 0; r < imageSize.y; r++){
-        for(int c = 0; c < imageSize.x; c++){
-            float finalR = 0, finalG = 0, finalB = 0;
-            for(int mr = 0; mr < m.getHeight(); mr++){
-                for(int mc = 0; mc < m.getWidth(); mc++){
-                    int pixel_r = r - half_h + mr;
-                    int pixel_c = c - half_w + mc;
-                    if(
-                        pixel_r < imageSize.y && pixel_r >= 0 
-                        && pixel_c < imageSize.x && pixel_c >= 0
-                    ){
-                        RGB rgb  = image.getPixel(pixel_c, pixel_r);
-                        float factor = m.get(mr, mc);
-                        finalR += factor * rgb.r;
-                        finalG += factor * rgb.g;
-                        finalB += factor * rgb.b;
-                    }
-                }
-            }
-            new_img.setPixel(c, r, RGB(std::abs(finalR), std::abs(finalG), std::abs(finalB)));
-        }
-    }
-    return new_img;
-}
-
-sf::Image sobel(sf::Image image, float threshold=0.f){
-    for(int i=0; i<image.getSize().x; i++){
-        for(int j=0; j<image.getSize().y; j++){
-            image.setPixel(i,j,grayScale(image.getPixel(i,j)));
-        }   
-    }
-    sf::Image edgesY = apply_convolution(image, {3,3,{
-        1,  1,  1,
-        0,  0,  0,
-        -1, -1, -1
-    }});
-
-    sf::Image edgesX = apply_convolution(image, {3,3, {
-        -1, 0, 1,
-        -1, 0, 1,
-        -1, 0, 1
-    }});
-    sf::Image edges;
-    edges.create(image.getSize().x, image.getSize().y);
-    for(int i=0; i < image.getSize().x; i++){
-        for(int j=0; j < image.getSize().y; j++){
-            int g = std::sqrt(
-                std::pow(edgesX.getPixel(i, j).r, 2) +
-                std::pow(edgesY.getPixel(i, j).r, 2)
-            );
-            if(g >= threshold*255){
-                edges.setPixel(i, j, RGB(g,0, 0, 0));
-            }else{
-                edges.setPixel(i,j,RGB(0x0));
-            }
-        }
-    }
-    return edges;
-}
 
 void palette_to_file(const Palette& palette, const std::string& path, int rows=1){
     sf::Image image;
@@ -335,7 +144,11 @@ int main(int argc, char** argv){
                 {"scheme", "analogous"}, // mono, analogous, complementary, triadic, split_complementary, rectangle, square 
                 {"spectre", "linear"}, // complete, linear 
                 {"inter", 0}, // <number>
-                {"disparity", 0.85} // <number>
+                {"disparity", 0.85}, // <number>
+                // extraction:
+                {"extract", nullptr}, // each, <path>
+                {"method", "simple"}, // simple, median
+                {"allow_unexistent", true} // <bool>
             } // object or <color> array
         }
     };
@@ -366,6 +179,7 @@ int main(int argc, char** argv){
     log(IMPORTANT, "Palette");
     Palette base_colors;
     Palette palette = {};
+    bool extract_for_each = false;
     auto str2rgb = [](std::string str)->RGB{
         if(str.length() > 0 && str[0] == '#'){
             str = str.substr(1);
@@ -377,7 +191,7 @@ int main(int argc, char** argv){
         for(auto& col: config["palette"]){
             palette.push_back(str2rgb(col.get<std::string>()));
         }
-    }else{
+    }else if(config["palette"]["extract"].is_null()){
         RGB main = str2rgb(config["palette"]["main"].get<std::string>());
         float disparity = config["palette"]["disparity"].get<float>();
         int inter = config["palette"]["inter"].get<int>();
@@ -460,6 +274,23 @@ int main(int argc, char** argv){
             log(ERROR, "Bad palette.spectre option: " + config["palette"]["spectre"].dump());
             return -1;
         }
+    }else if(config["palette"]["extract"].get<std::string>() != "each"){
+        sf::Image reference;
+        std::string path = config["palette"]["extract"].get<std::string>();
+        if(!reference.loadFromFile(path)){
+            log(ERROR, "Unable to load image for palette extraction: "+path);
+            return -1;
+        }
+        if(config["palette"]["method"] == "simple"){
+            palette = extractPaletteSimple(reference, config["palette"]["inter"].get<int>(), config["palette"]["allow_unexistent"].get<bool>());
+        }else if(config["palette"]["method"] == "median"){
+            palette = extractPaletteMedianCut(reference, config["palette"]["inter"].get<int>(), config["palette"]["allow_unexistent"].get<bool>());
+        }else{
+            log(ERROR, "Bad palette.method option: " + config["palette"]["method"].dump());
+        }
+
+    }else{
+        extract_for_each = true;
     }
     
 
@@ -479,9 +310,13 @@ int main(int argc, char** argv){
     }
 
     if(opts["--palette"] != ""){
-        log(INFO, "Displaying palette");
-        palette_to_file(printable_palette, opts["--palette"], palette_rows);
-        log(SUCCESS, "Palette displayed in " + opts["--palette"]);
+        if(extract_for_each){
+            log(WARNING, "Can't display palette for option palette.extract with value \"each\".");
+        }else{
+            log(INFO, "Displaying palette");
+            palette_to_file(printable_palette, opts["--palette"], palette_rows);
+            log(SUCCESS, "Palette displayed in " + opts["--palette"]);
+        }
     }
 
     // BUILD COLOR SELECTION STRATEGY
@@ -504,6 +339,7 @@ int main(int argc, char** argv){
             );
         };
         sparsity = factor;
+        extract_for_each = false;
     }else if(config["quantization"] == "closest_rgb"){
         quantizer = [palette](const RGB &rgb) -> RGB {
             return closestByColor(palette, rgb)[0];
@@ -530,8 +366,9 @@ int main(int argc, char** argv){
         sparsity = config["dithering"]["sparsity"].get<float>();
     
     }else if(config["dithering"]["sparsity"] == "auto"){
-        log(INFO, "Auto sparsity: " + std::to_string(sparsity));
-    
+        if(!extract_for_each){
+            log(INFO, "Auto sparsity: " + std::to_string(sparsity));
+        }
     }else{
         log(ERROR, "Bad sparsity option: " + config["dithering"]["sparsity"].dump());
         return -1;
@@ -544,9 +381,9 @@ int main(int argc, char** argv){
         std::string name = std::regex_replace(file, parent_dir_re, "");
         sf::Image img, out;
         log(IMPORTANT, name);
-        log(INFO, "Loading image...", "");
+        log(INFO, "Loading image...", " ");
         if(img.loadFromFile(file)){
-            log(INFO, "Loaded", "");
+            log(INFO, "Loaded", " ");
         }else{
             log(ERROR, "Couldn't load "+file);
             continue;
@@ -554,6 +391,33 @@ int main(int argc, char** argv){
         
         // PROCESS IMAGE
         
+        // Recompute quantizer if necessary
+        if(extract_for_each){
+            log(INFO, "Recomputing palette...", " ");
+            if(config["palette"]["method"] == "simple"){
+                palette = extractPaletteSimple(img, config["palette"]["inter"].get<int>(), config["palette"]["allow_unexistent"].get<bool>());
+            }else if(config["palette"]["method"] == "median"){
+                palette = extractPaletteMedianCut(img, config["palette"]["inter"].get<int>(), config["palette"]["allow_unexistent"].get<bool>());
+            }else{
+                log(ERROR, "Bad palette.method option: " + config["palette"]["method"].dump());
+                return -1;
+            }
+            log(INFO, "Recomputing quantizer...", " ");
+            if(config["quantization"] == "closest_rgb"){
+                quantizer = [palette](const RGB &rgb) -> RGB {
+                    return closestByColor(palette, rgb)[0];
+                };
+                sparsity = 255.0 / palette.size();
+            }else if(config["quantization"] == "closest_gray"){
+                quantizer = [palette](const RGB &rgb) -> RGB {
+                    return closestByBrightness(palette, rgb)[0];
+                };
+                sparsity = 255.0 / palette.size();
+            }else{
+                log(ERROR, "Bad quantization option: " + config["quantization"].dump());
+                return -1;
+            }
+        }
         //// Normalization
         if(config["normalize"] == "pre"){
             normalize(img);
@@ -608,7 +472,7 @@ int main(int argc, char** argv){
         
         // SAVE IT
         log(INFO, "Saving...", "");
-        out.saveToFile(opts["--output-dir"] + name);
+        out.saveToFile(opts["--output-dir"] + std::regex_replace(name, std::regex("[.][^.]+"), ".png"));
         log(SUCCESS, "Done");
     }
     return 0;
