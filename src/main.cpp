@@ -126,6 +126,7 @@ int main(int argc, char** argv){
     json config = {
         {"blur", 0}, // <number>
         {"normalize", "no"}, // no, pre, post
+        {"outline", 0}, // no, pre, post
         {"select_pixel", "avg"}, // avg, med, min, max
         {"width", 64}, // <number>
         {"height", 64}, // <number>
@@ -435,14 +436,41 @@ int main(int argc, char** argv){
             }});
         }
 
+
         //// Scaling
+        uint width = config["width"].get<uint>();
+        uint height = config["height"].get<uint>();
         out = pixelize(
             img, 
-            config["width"].get<uint>(), 
-            config["height"].get<uint>(), 
+            width, 
+            height, 
             config["select_pixel"].get<std::string>()
         );
         
+        // Edge detection
+        if(config["outline"].get<float>() >= 0.001){
+            log(INFO, "Sobel", " ");
+            sf::Image edges_ = sobel(img, 1.f - config["outline"].get<float>());
+            log(INFO, "Pixelize edges", " ");
+            sf::Image edges = pixelize(
+                edges_,
+                width,
+                height,
+                "min"
+            );
+            edges.saveToFile("edges.png");
+            log(INFO, "Adding edges", " ");
+            for(int x = 0; x < out.getSize().x; x++){
+                for(int y = 0; y < out.getSize().y; y++){
+                    RGB pixel_orig = out.getPixel(x, y);
+                    RGB pixel_edge = edges.getPixel(x, y);
+                    pixel_orig.r = std::max(0, (int)pixel_orig.r - pixel_edge.r);
+                    pixel_orig.g = std::max(0, (int)pixel_orig.g - pixel_edge.g);
+                    pixel_orig.b = std::max(0, (int)pixel_orig.b - pixel_edge.b);
+                    out.setPixel(x, y, pixel_orig);
+                }
+            }
+        }
 
         //// Normalization
         if(config["normalize"] == "post"){

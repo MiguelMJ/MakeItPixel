@@ -165,9 +165,9 @@ namespace mipa {
                     std::pow(edgesY.getPixel(i, j).r, 2)
                 );
                 if(g >= threshold*255){
-                    edges.setPixel(i, j, RGB(g,0, 0, 0));
+                    edges.setPixel(i, j, RGB(0xffffffff));
                 }else{
-                    edges.setPixel(i,j,RGB(0x0));
+                    edges.setPixel(i,j,RGB(0xff));
                 }
             }
         }
