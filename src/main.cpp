@@ -458,7 +458,6 @@ int main(int argc, char** argv){
                 height,
                 "min"
             );
-            edges.saveToFile("edges.png");
             log(INFO, "Adding edges", " ");
             for(int x = 0; x < out.getSize().x; x++){
                 for(int y = 0; y < out.getSize().y; y++){
