@@ -414,7 +414,7 @@ int main(int argc, char** argv){
                     return closestByBrightness(palette, rgb)[0];
                 };
                 sparsity = 255.0 / palette.size();
-            }else{
+            }else if(config["quantization"] != "none"){
                 log(ERROR, "Bad quantization option: " + config["quantization"].dump());
                 return -1;
             }
