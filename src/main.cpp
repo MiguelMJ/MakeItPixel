@@ -343,11 +343,13 @@ int main(int argc, char** argv){
         extract_for_each = false;
     }else if(config["quantization"] == "closest_rgb"){
         quantizer = [palette](const RGB &rgb) -> RGB {
+            if(rgb.a < 10) return rgb;
             return closestByColor(palette, rgb)[0];
         };
         sparsity = 255.0 / palette.size();
     }else if(config["quantization"] == "closest_gray"){
         quantizer = [palette](const RGB &rgb) -> RGB {
+            if(rgb.a < 10) return rgb;
             return closestByBrightness(palette, rgb)[0];
         };
         sparsity = 255.0 / palette.size();
@@ -406,11 +408,13 @@ int main(int argc, char** argv){
             log(INFO, "Recomputing quantizer...", " ");
             if(config["quantization"] == "closest_rgb"){
                 quantizer = [palette](const RGB &rgb) -> RGB {
+                    if(rgb.a < 10) return rgb;
                     return closestByColor(palette, rgb)[0];
                 };
                 sparsity = 255.0 / palette.size();
             }else if(config["quantization"] == "closest_gray"){
                 quantizer = [palette](const RGB &rgb) -> RGB {
+                    if(rgb.a < 10) return rgb;
                     return closestByBrightness(palette, rgb)[0];
                 };
                 sparsity = 255.0 / palette.size();
